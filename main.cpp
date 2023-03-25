@@ -1,9 +1,16 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-#define MAX_ALIENS__IN_A_ROW 20
+#define MAX_ALIENS__IN_A_ROW 10
 #define MAX_NO_OF_ALIEN_ROWS 2
-#define DIST_BETWEEN__ALIENS 10
+
+#define XDIST_BETWEEN_ALIENS 10
+#define YDIST_BETWEEN_ALIENS 10
+#define ALIEN___PIXEL__WIDTH 64
+#define ALIEN__PIXEL__HEIGHT 64
+
+#define ALIEN___STARTING___X 100
+#define ALIEN___STARTING___Y 100
 
 #define MAX_SCREEN_X_DISTANCE 1600
 #define MAX_SCREEN_Y_DISTANCE 1600
@@ -26,19 +33,22 @@ public:
         // Empty constructor
     }
     void draw(sf::RenderWindow& renderWindowsReference) {
-        std::string alientImage{MAIN_FILE_PATH};
-        if(alienType==defender){
-            alientImage.append("1-0"+std::to_string(imageMovement));
-        } else if (alienType==striker) {
-            alientImage.append("2-0"+std::to_string(imageMovement));
+        if(alive) {
+            std::string alientImage{MAIN_FILE_PATH};
+            if (alienType == defender) {
+                alientImage.append("1-0" + std::to_string(imageMovement));
+            } else if (alienType == striker) {
+                alientImage.append("2-0" + std::to_string(imageMovement));
+            }
+            alientImage.append(".png");
+            std::cout << "Selected defender using path " + alientImage + " drawing at " << std::to_string(XLocation)
+                      << ", " << std::to_string(YLocation) << "\n";
+            m_texture.loadFromFile(alientImage);
+            //m_texture.loadFromFile("./assets/aliens/ghost.png");
+            m_sprite.setTexture(m_texture);
+            m_sprite.setPosition(XLocation, YLocation);
+            renderWindowsReference.draw(m_sprite);
         }
-        alientImage.append(".png");
-        std::cout<<"Selected defender using path " + alientImage + " drawing at " << std::to_string(XLocation) << ", " << std::to_string(YLocation) << "\n";
-        m_texture.loadFromFile(alientImage);
-        //m_texture.loadFromFile("./assets/aliens/ghost.png");
-        m_sprite.setTexture(m_texture);
-        m_sprite.setPosition(XLocation, YLocation);
-        renderWindowsReference.draw(m_sprite);
     }
     void move(float x, float y) {
         XLocation = x;
@@ -50,6 +60,7 @@ public:
 private:
     bool lastLeft{false};
     bool lastRight{false};
+    bool alive{true};
     short int direction{0};
     short int imageMovement{0};
     float XLocation; //{0.0f};
@@ -70,16 +81,23 @@ public:
         // Constructor
         for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
             for(int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
-                fleet[row][alienInRow] = new Alien(alienInRow, row, AlienType(row % 2));
+                float xCord = ALIEN___STARTING___X + alienInRow * (ALIEN___PIXEL__WIDTH + XDIST_BETWEEN_ALIENS);
+                float yCord = ALIEN___STARTING___Y + row * (ALIEN__PIXEL__HEIGHT + YDIST_BETWEEN_ALIENS);
+                std::cout<<"( "<<std::to_string(xCord)<<", "<<std::to_string(yCord)<<")  ";
+                fleet[row][alienInRow] = new Alien(xCord, yCord, AlienType(row % 2));
             }
+            std::cout<<"\n";
         }
     }
     ~AlienFleet() {
         // De-constructor
     }
-    void drawOne(sf::RenderWindow& renderWindowsReference) {
-        fleet[0][0]->move(100,100);
-        fleet[0][0]->draw(renderWindowsReference);
+    void drawFleet(sf::RenderWindow& renderWindowsReference) {
+        for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
+            for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
+                fleet[row][alienInRow]->draw(renderWindowsReference);
+            }
+        }
     }
 private:
     Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
@@ -93,7 +111,7 @@ int main() {
     while(window.isOpen()) {
         // Clear window
         window.clear();
-        fleet.drawOne(window);
+        fleet.drawFleet(window);
         std::cout << "Hello, World!" << std::endl;
         sf::Event event;
         while(window.pollEvent(event)){
