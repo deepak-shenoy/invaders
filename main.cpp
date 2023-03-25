@@ -18,7 +18,9 @@
 
 #define ALIEN__LEFT___MARGIN 10
 #define ALIEN__RIGHT__MARGIN MAX_SCREEN_X_DISTANCE - ALIEN___PIXEL__WIDTH - 10
-#define ALIENT__MARCH___DIST 1
+#define ALIEN__BOTTOM_MARGIN MAX_SCREEN_Y_DISTANCE - ALIEN__PIXEL__HEIGHT- 10
+#define ALIENT_MARCH__H_DIST 1
+#define ALIENT_MARCH__V_DIST 10
 
 #define MAIN_FILE_PATH "./assets/aliens/row-0"
 
@@ -60,11 +62,14 @@ public:
     float getX() {
         return XLocation;
     }
-    float setX(float xCordVal) {
+    void setX(float xCordVal) {
         XLocation = xCordVal;
     }
     float getY() {
         return YLocation;
+    }
+    void setY(float yCordVal) {
+        YLocation = yCordVal;
     }
     void move(float x, float y) {
         XLocation = x;
@@ -126,15 +131,26 @@ public:
                 if(moveLeft && fleet[row][alienInRow]->isAilve()) {
                     float xCord{fleet[row][alienInRow]->getX()};
                     if(xCord<=ALIEN__LEFT___MARGIN) nextDirection = !moveLeft;
-                    xCord -= ALIENT__MARCH___DIST;
+                    xCord -= ALIENT_MARCH__H_DIST;
                     fleet[row][alienInRow]->marchStepMovement();
                     fleet[row][alienInRow]->setX(xCord);
                 } else if(fleet[row][alienInRow]->isAilve()) {
                     float xCord{fleet[row][alienInRow]->getX()};
                     if(xCord>=ALIEN__RIGHT__MARGIN) nextDirection = !moveLeft;
-                    xCord += ALIENT__MARCH___DIST;
+                    xCord += ALIENT_MARCH__H_DIST;
                     fleet[row][alienInRow]->marchStepMovement();
                     fleet[row][alienInRow]->setX(xCord);
+                }
+            }
+        }
+        if(nextDirection!=moveLeft) {
+            for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
+                for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
+                    if(fleet[row][alienInRow]->isAilve()) {
+                        float yCord{fleet[row][alienInRow]->getY()};
+                        yCord += ALIENT_MARCH__V_DIST;
+                        fleet[row][alienInRow]->setY(yCord);
+                    }
                 }
             }
         }
@@ -142,7 +158,7 @@ public:
     }
 private:
     Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
-    bool moveLeft{false};
+    bool moveLeft{true};
 };
 
 int main() {
