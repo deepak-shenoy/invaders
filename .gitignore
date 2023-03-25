@@ -1,0 +1,9 @@
+#
+# Deepak Shenoy
+#
+# Mar 25, 2023
+#
+cmake-build-debug/
+testing/
+.idea
+
