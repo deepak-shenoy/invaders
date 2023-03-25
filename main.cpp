@@ -1,8 +1,12 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+#define MAX_SCREEN_X_DISTANCE 1600
+#define MAX_SCREEN_Y_DISTANCE 1600
+
 #define MAX_ALIENS__IN_A_ROW 10
 #define MAX_NO_OF_ALIEN_ROWS 2
+#define NO_OF_ALIEN___IMAGES 2
 
 #define XDIST_BETWEEN_ALIENS 10
 #define YDIST_BETWEEN_ALIENS 10
@@ -12,8 +16,9 @@
 #define ALIEN___STARTING___X 100
 #define ALIEN___STARTING___Y 100
 
-#define MAX_SCREEN_X_DISTANCE 1600
-#define MAX_SCREEN_Y_DISTANCE 1600
+#define ALIEN__LEFT___MARGIN 10
+#define ALIEN__RIGHT__MARGIN MAX_SCREEN_X_DISTANCE - ALIEN___PIXEL__WIDTH - 10
+#define ALIENT__MARCH___DIST 1
 
 #define MAIN_FILE_PATH "./assets/aliens/row-0"
 
@@ -41,8 +46,7 @@ public:
                 alientImage.append("2-0" + std::to_string(imageMovement));
             }
             alientImage.append(".png");
-            std::cout << "Selected defender using path " + alientImage + " drawing at " << std::to_string(XLocation)
-                      << ", " << std::to_string(YLocation) << "\n";
+            //std::cout << "Selected defender using path " + alientImage + " drawing at " << std::to_string(XLocation)<< ", " << std::to_string(YLocation) << "\n";
             m_texture.loadFromFile(alientImage);
             //m_texture.loadFromFile("./assets/aliens/ghost.png");
             m_sprite.setTexture(m_texture);
@@ -53,9 +57,21 @@ public:
     bool isAilve() {
         return alive;
     }
+    float getX() {
+        return XLocation;
+    }
+    float setX(float xCordVal) {
+        XLocation = xCordVal;
+    }
+    float getY() {
+        return YLocation;
+    }
     void move(float x, float y) {
         XLocation = x;
         YLocation = y;
+    }
+    void marchStepMovement() {
+        ++imageMovement %= NO_OF_ALIEN___IMAGES;
     }
     ~Alien() {
         // Empty de-constructor
@@ -102,15 +118,31 @@ public:
             }
         }
     }
-    void march(sf::RenderWindow& renderWindowsReference) {
+    void march() {
+        bool nextDirection{moveLeft};
+        std::cout<<"Direction is: "<<moveLeft<<"\n";
         for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
             for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
-                fleet[row][alienInRow]->draw(renderWindowsReference);
+                if(moveLeft && fleet[row][alienInRow]->isAilve()) {
+                    float xCord{fleet[row][alienInRow]->getX()};
+                    if(xCord<=ALIEN__LEFT___MARGIN) nextDirection = !moveLeft;
+                    xCord -= ALIENT__MARCH___DIST;
+                    fleet[row][alienInRow]->marchStepMovement();
+                    fleet[row][alienInRow]->setX(xCord);
+                } else if(fleet[row][alienInRow]->isAilve()) {
+                    float xCord{fleet[row][alienInRow]->getX()};
+                    if(xCord>=ALIEN__RIGHT__MARGIN) nextDirection = !moveLeft;
+                    xCord += ALIENT__MARCH___DIST;
+                    fleet[row][alienInRow]->marchStepMovement();
+                    fleet[row][alienInRow]->setX(xCord);
+                }
             }
         }
+        moveLeft=nextDirection;
     }
 private:
     Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
+    bool moveLeft{false};
 };
 
 int main() {
@@ -121,8 +153,8 @@ int main() {
     while(window.isOpen()) {
         // Clear window
         window.clear();
+        fleet.march();
         fleet.drawFleet(window);
-        std::cout << "Hello, World!" << std::endl;
         sf::Event event;
         while(window.pollEvent(event)){
             // Terminate application
