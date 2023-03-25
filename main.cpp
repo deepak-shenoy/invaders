@@ -8,8 +8,8 @@
 #define MAX_NO_OF_ALIEN_ROWS 2
 #define NO_OF_ALIEN___IMAGES 2
 
-#define XDIST_BETWEEN_ALIENS 10
-#define YDIST_BETWEEN_ALIENS 10
+#define XDIST_BETWEEN_ALIENS 20
+#define YDIST_BETWEEN_ALIENS 20
 #define ALIEN___PIXEL__WIDTH 64
 #define ALIEN__PIXEL__HEIGHT 64
 
@@ -48,9 +48,7 @@ public:
                 alientImage.append("2-0" + std::to_string(imageMovement));
             }
             alientImage.append(".png");
-            //std::cout << "Selected defender using path " + alientImage + " drawing at " << std::to_string(XLocation)<< ", " << std::to_string(YLocation) << "\n";
             m_texture.loadFromFile(alientImage);
-            //m_texture.loadFromFile("./assets/aliens/ghost.png");
             m_sprite.setTexture(m_texture);
             m_sprite.setPosition(XLocation, YLocation);
             renderWindowsReference.draw(m_sprite);
@@ -107,10 +105,8 @@ public:
             for(int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
                 float xCord = ALIEN___STARTING___X + alienInRow * (ALIEN___PIXEL__WIDTH + XDIST_BETWEEN_ALIENS);
                 float yCord = ALIEN___STARTING___Y + row * (ALIEN__PIXEL__HEIGHT + YDIST_BETWEEN_ALIENS);
-                std::cout<<"( "<<std::to_string(xCord)<<", "<<std::to_string(yCord)<<")  ";
                 fleet[row][alienInRow] = new Alien(xCord, yCord, AlienType(row % 2));
             }
-            std::cout<<"\n";
         }
     }
     ~AlienFleet() {
@@ -124,41 +120,45 @@ public:
         }
     }
     void march() {
-        bool nextDirection{moveLeft};
-        std::cout<<"Direction is: "<<moveLeft<<"\n";
-        for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
-            for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
-                if(moveLeft && fleet[row][alienInRow]->isAilve()) {
-                    float xCord{fleet[row][alienInRow]->getX()};
-                    if(xCord<=ALIEN__LEFT___MARGIN) nextDirection = !moveLeft;
-                    xCord -= ALIENT_MARCH__H_DIST;
-                    fleet[row][alienInRow]->marchStepMovement();
-                    fleet[row][alienInRow]->setX(xCord);
-                } else if(fleet[row][alienInRow]->isAilve()) {
-                    float xCord{fleet[row][alienInRow]->getX()};
-                    if(xCord>=ALIEN__RIGHT__MARGIN) nextDirection = !moveLeft;
-                    xCord += ALIENT_MARCH__H_DIST;
-                    fleet[row][alienInRow]->marchStepMovement();
-                    fleet[row][alienInRow]->setX(xCord);
-                }
-            }
-        }
-        if(nextDirection!=moveLeft) {
-            for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
+        if(!reachedBottom) {
+            bool nextDirection{moveLeft};
+            for (int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row++) {
                 for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
-                    if(fleet[row][alienInRow]->isAilve()) {
-                        float yCord{fleet[row][alienInRow]->getY()};
-                        yCord += ALIENT_MARCH__V_DIST;
-                        fleet[row][alienInRow]->setY(yCord);
+                    if (moveLeft && fleet[row][alienInRow]->isAilve()) {
+                        float xCord{fleet[row][alienInRow]->getX()};
+                        if (xCord <= ALIEN__LEFT___MARGIN) nextDirection = !moveLeft;
+                        xCord -= ALIENT_MARCH__H_DIST;
+                        fleet[row][alienInRow]->marchStepMovement();
+                        fleet[row][alienInRow]->setX(xCord);
+                    } else if (fleet[row][alienInRow]->isAilve()) {
+                        float xCord{fleet[row][alienInRow]->getX()};
+                        if (xCord >= ALIEN__RIGHT__MARGIN) nextDirection = !moveLeft;
+                        xCord += ALIENT_MARCH__H_DIST;
+                        fleet[row][alienInRow]->marchStepMovement();
+                        fleet[row][alienInRow]->setX(xCord);
                     }
                 }
             }
+            if (nextDirection != moveLeft) {
+                for (int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row++) {
+                    for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
+                        if (fleet[row][alienInRow]->isAilve()) {
+                            float yCord{fleet[row][alienInRow]->getY()};
+                            yCord += ALIENT_MARCH__V_DIST;
+                            fleet[row][alienInRow]->setY(yCord);
+                            if (yCord >= ALIEN__BOTTOM_MARGIN) reachedBottom = true;
+                        }
+                    }
+                }
+            }
+            std::cout << reachedBottom << std::endl;
+            moveLeft = nextDirection;
         }
-        moveLeft=nextDirection;
     }
 private:
     Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
     bool moveLeft{true};
+    bool reachedBottom{false};
 };
 
 int main() {
