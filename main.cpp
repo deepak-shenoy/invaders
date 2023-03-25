@@ -50,6 +50,9 @@ public:
             renderWindowsReference.draw(m_sprite);
         }
     }
+    bool isAilve() {
+        return alive;
+    }
     void move(float x, float y) {
         XLocation = x;
         YLocation = y;
@@ -93,6 +96,13 @@ public:
         // De-constructor
     }
     void drawFleet(sf::RenderWindow& renderWindowsReference) {
+        for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
+            for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
+                fleet[row][alienInRow]->draw(renderWindowsReference);
+            }
+        }
+    }
+    void march(sf::RenderWindow& renderWindowsReference) {
         for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
             for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
                 fleet[row][alienInRow]->draw(renderWindowsReference);
