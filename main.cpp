@@ -74,6 +74,9 @@ public:
     bool isAilve() {
         return alive;
     }
+    void setAliveOff() {
+        alive=false;
+    }
     float getX() {
         return XLocation;
     }
@@ -168,6 +171,22 @@ public:
             moveLeft = nextDirection;
         }
     }
+    bool alientAreaImpacted(float x, float y) {
+        for (int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row++) {
+            for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
+                if(fleet[row][alienInRow]->isAilve()){
+                    float yCord{fleet[row][alienInRow]->getY()};
+                    if(y<yCord || y>(yCord+ALIEN__PIXEL__HEIGHT)) break;
+                    float xCord{fleet[row][alienInRow]->getX()};
+                    if(x>=xCord && x<=(xCord+ALIEN___PIXEL__WIDTH)) {
+                        fleet[row][alienInRow]->setAliveOff();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 private:
     Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
     bool moveLeft{true};
@@ -207,11 +226,11 @@ public:
     void fireShot() {
         if(!shotFired) {
             shotFired = true;
-            bulletXPos=XPos;
+            bulletXPos=XPos + DEFENDER_______WIDTH / 2 - 2;
             bulletYPos=DEFENDER__Y_POSITION - DEFENDER_BULLET_HGHT;
         }
     }
-    void moveBullet(sf::RenderWindow& renderWindowsReference) {
+    void moveBullet(sf::RenderWindow& renderWindowsReference, AlienFleet& alienFleet) {
         if(shotFired) {
             bullet_m_texture.loadFromFile(bulletImage + "bullet-00.png");
             bullet_m_sprite.setTexture(bullet_m_texture);
@@ -222,7 +241,7 @@ public:
                 shotFired = false;
             }
             renderWindowsReference.draw(bullet_m_sprite);
-
+            if (alienFleet.alientAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
         }
     }
     bool firedShot() {
@@ -254,7 +273,7 @@ int main() {
         fleet.drawFleet(window);
         defender.draw(window);
         if(defender.firedShot()) {
-            defender.moveBullet(window);
+            defender.moveBullet(window, fleet);
         }
         sf::Event event;
         while(window.pollEvent(event)){
