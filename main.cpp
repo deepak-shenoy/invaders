@@ -180,6 +180,7 @@ public:
                     float xCord{fleet[row][alienInRow]->getX()};
                     if(x>=xCord && x<=(xCord+ALIEN___PIXEL__WIDTH)) {
                         fleet[row][alienInRow]->setAliveOff();
+                        --activeAlientsInFleet;
                         return true;
                     }
                 }
@@ -191,6 +192,7 @@ private:
     Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
     bool moveLeft{true};
     bool reachedBottom{false};
+    short int activeAlientsInFleet{MAX_NO_OF_ALIEN_ROWS * MAX_ALIENS__IN_A_ROW};
 };
 
 /*
