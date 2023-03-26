@@ -4,6 +4,7 @@
 #define MAX_SCREEN_X_DISTANCE 1600
 #define MAX_SCREEN_Y_DISTANCE 1600
 #define BORDER_HEIGHT_BOTTOM 10
+#define BORDER_HEIGHT____TOP 80
 
 #define MAX_ALIENS__IN_A_ROW 10
 #define MAX_NO_OF_ALIEN_ROWS 2
@@ -32,8 +33,13 @@
 #define DEFENDER_LEFT_BORDER DEFENFER_FROM_BORDER
 #define DEFENDER_RIGHT_BORDR MAX_SCREEN_X_DISTANCE - DEFENDER_______WIDTH - DEFENFER_FROM_BORDER
 
+#define DEFENDER_BULLET_HGHT 11
+#define DEFENDER_BULLET_WIDT 7
+#define DEFENDER_BULLET_SPED 10
+#define BULLET__TOP___BORDER 12
+
 #define ALIEN_____PATH "./assets/aliens/row-0"
-#define DEFENDER__PATH "./assets/defender/defender-0"
+#define DEFENDER__PATH "./assets/defender/"
 
 enum AlienType {defender, striker};
 
@@ -182,10 +188,11 @@ public:
         //Destroyer
     }
     void draw(sf::RenderWindow& renderWindowsReference) {
-        m_texture.loadFromFile(defenderImage + "1.png");
-        m_sprite.setTexture(m_texture);
-        m_sprite.setPosition(XPos, DEFENDER__Y_POSITION);
-        renderWindowsReference.draw(m_sprite);
+        if(shotFired) defender_m_texture.loadFromFile(defenderImage + "defender-01.png");
+        else defender_m_texture.loadFromFile(defenderImage + "defender-00.png");
+        defender_m_sprite.setTexture(defender_m_texture);
+        defender_m_sprite.setPosition(XPos, DEFENDER__Y_POSITION);
+        renderWindowsReference.draw(defender_m_sprite);
     }
     void moveLeft() {
         if(XPos - DEFENDER_MOVE___DIST > DEFEENDER__FROM_WALL) {
@@ -197,11 +204,41 @@ public:
             XPos += DEFENDER_MOVE___DIST;
         }
     }
+    void fireShot() {
+        if(!shotFired) {
+            shotFired = true;
+            bulletXPos=XPos;
+            bulletYPos=DEFENDER__Y_POSITION - DEFENDER_BULLET_HGHT;
+        }
+    }
+    void moveBullet(sf::RenderWindow& renderWindowsReference) {
+        if(shotFired) {
+            bullet_m_texture.loadFromFile(bulletImage + "bullet-00.png");
+            bullet_m_sprite.setTexture(bullet_m_texture);
+            bullet_m_sprite.setPosition(bulletXPos, bulletYPos);
+            if((bulletYPos - DEFENDER_BULLET_SPED) > BULLET__TOP___BORDER) {
+                bulletYPos -= DEFENDER_BULLET_SPED;
+            } else {
+                shotFired = false;
+            }
+            renderWindowsReference.draw(bullet_m_sprite);
+
+        }
+    }
+    bool firedShot() {
+        return shotFired;
+    }
 private:
     std::string defenderImage{DEFENDER__PATH};
-    sf::Texture m_texture;
-    sf::Sprite m_sprite;
+    bool shotFired{false};
+    sf::Texture defender_m_texture;
+    sf::Sprite defender_m_sprite;
     float XPos{MAX_SCREEN_X_DISTANCE/2};
+    float bulletXPos{0};
+    float bulletYPos{0};
+    std::string bulletImage{DEFENDER__PATH};
+    sf::Texture bullet_m_texture;
+    sf::Sprite bullet_m_sprite;
 };
 
 int main() {
@@ -216,6 +253,9 @@ int main() {
         fleet.march();
         fleet.drawFleet(window);
         defender.draw(window);
+        if(defender.firedShot()) {
+            defender.moveBullet(window);
+        }
         sf::Event event;
         while(window.pollEvent(event)){
             // Terminate application
@@ -235,7 +275,7 @@ int main() {
                     defender.draw(window);
                 }
                 if(pressedButton == sf::Keyboard::Space) {
-
+                    defender.fireShot();
                 }
 
             }
