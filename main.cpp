@@ -116,10 +116,15 @@ public:
     ~AlienBullet() {
         // Destructor
     }
-    void draw() {
+    void move(sf::RenderWindow& renderWindowsReference) {
         if(activeBullet) {
             std::string alientBulletImage{ALIEN_____PATH};
             m_texture.loadFromFile(alientBulletImage.append("bullet-00.png"));
+            m_sprite.setTexture(m_texture);
+            m_sprite.setPosition(xCord, yCord);
+            renderWindowsReference.draw(m_sprite);
+            yCord++;
+            if(yCord>DEFENDER__Y_POSITION + DEFENDER______HEIGHT) activeBullet=false;
         }
     }
 private:
