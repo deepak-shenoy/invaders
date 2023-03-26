@@ -157,9 +157,20 @@ private:
     bool reachedBottom{false};
 };
 
+/*
+ *
+ * Defender (user)
+ *
+ */
+class Defender {
+public:
+    float XPos{MAX_SCREEN_X_DISTANCE/2};
+};
+
 int main() {
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
     AlienFleet fleet = AlienFleet();
+    Defender defender = Defender();
     window.setFramerateLimit(60);
     window.display();
     while(window.isOpen()) {
