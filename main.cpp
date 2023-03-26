@@ -27,7 +27,7 @@
 #define DEFENDER_______WIDTH 72
 #define DEFENFER_FROM_BORDER 5
 #define DEFEENDER__FROM_WALL 10
-#define DEFENDER_MOVE___DIST 10
+#define DEFENDER_MOVE___DIST 15
 #define DEFENDER__Y_POSITION MAX_SCREEN_Y_DISTANCE - DEFENDER______HEIGHT- DEFENFER_FROM_BORDER - BORDER_HEIGHT_BOTTOM
 #define DEFENDER_LEFT_BORDER DEFENFER_FROM_BORDER
 #define DEFENDER_RIGHT_BORDR MAX_SCREEN_X_DISTANCE - DEFENDER_______WIDTH - DEFENFER_FROM_BORDER
@@ -233,6 +233,9 @@ int main() {
                 if(pressedButton == sf::Keyboard::Left) {
                     defender.moveLeft();
                     defender.draw(window);
+                }
+                if(pressedButton == sf::Keyboard::Space) {
+
                 }
 
             }
