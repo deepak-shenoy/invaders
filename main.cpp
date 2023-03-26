@@ -115,8 +115,9 @@ private:
  */
 class AlienFleet {
 public:
-    AlienFleet() {
+    AlienFleet(int maxAlienShots) {
         // Constructor
+        maxAlienBullets = maxAlienShots;
         for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
             for(int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
                 float xCord = ALIEN___STARTING___X + alienInRow * (ALIEN___PIXEL__WIDTH + XDIST_BETWEEN_ALIENS);
@@ -193,6 +194,7 @@ private:
     bool moveLeft{true};
     bool reachedBottom{false};
     short int activeAlientsInFleet{MAX_NO_OF_ALIEN_ROWS * MAX_ALIENS__IN_A_ROW};
+    short int maxAlienBullets;
 };
 
 /*
@@ -264,7 +266,7 @@ private:
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
-    AlienFleet fleet = AlienFleet();
+    AlienFleet fleet = AlienFleet(1);
     Defender defender = Defender();
     window.setFramerateLimit(60);
     window.display();
