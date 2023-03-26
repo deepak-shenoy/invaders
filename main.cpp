@@ -38,7 +38,7 @@
 #define DEFENDER_BULLET_SPED 10
 #define BULLET__TOP___BORDER 12
 
-#define ALIEN_____PATH "./assets/aliens/row-0"
+#define ALIEN_____PATH "./assets/aliens/"
 #define DEFENDER__PATH "./assets/defender/"
 
 enum AlienType {defender, striker};
@@ -60,9 +60,9 @@ public:
         if(alive) {
             std::string alientImage{ALIEN_____PATH};
             if (alienType == defender) {
-                alientImage.append("1-0" + std::to_string(imageMovement));
+                alientImage.append("row-01-0" + std::to_string(imageMovement));
             } else if (alienType == striker) {
-                alientImage.append("2-0" + std::to_string(imageMovement));
+                alientImage.append("row-02-0" + std::to_string(imageMovement));
             }
             alientImage.append(".png");
             m_texture.loadFromFile(alientImage);
@@ -108,6 +108,26 @@ private:
     sf::Sprite m_sprite;
 };
 
+class AlienBullet {
+public:
+    AlienBullet() {
+        // Constructor
+    }
+    ~AlienBullet() {
+        // Destructor
+    }
+    void draw() {
+        if(activeBullet) {
+            std::string alientBulletImage{ALIEN_____PATH};
+            m_texture.loadFromFile(alientBulletImage.append("bullet-00.png"));
+        }
+    }
+private:
+    float xCord, yCord;
+    bool activeBullet{false};
+    sf::Texture m_texture;
+    sf::Sprite m_sprite;
+};
 /*
  *
  * Fleet of aliens
