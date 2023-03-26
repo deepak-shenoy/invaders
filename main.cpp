@@ -6,7 +6,7 @@
 
 #define MAX_ALIENS__IN_A_ROW 10
 #define MAX_NO_OF_ALIEN_ROWS 2
-#define NO_OF_ALIEN___IMAGES 2
+#define NO_OF_ALIEN___IMAGES 7
 
 #define XDIST_BETWEEN_ALIENS 20
 #define YDIST_BETWEEN_ALIENS 20
@@ -68,10 +68,6 @@ public:
     }
     void setY(float yCordVal) {
         YLocation = yCordVal;
-    }
-    void move(float x, float y) {
-        XLocation = x;
-        YLocation = y;
     }
     void marchStepMovement() {
         ++imageMovement %= NO_OF_ALIEN___IMAGES;
