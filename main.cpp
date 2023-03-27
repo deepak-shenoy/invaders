@@ -34,6 +34,7 @@
 #define DEFENFER_FROM_BORDER 5
 #define DEFEENDER__FROM_WALL 10
 #define DEFENDER_MOVE___DIST 15
+#define DEFENDER_MV_FAST_DIS 30
 #define DEFENDER__Y_POSITION MAX_SCREEN_Y_DISTANCE - DEFENDER______HEIGHT- DEFENFER_FROM_BORDER - BORDER_HEIGHT_BOTTOM
 #define DEFENDER_LEFT_BORDER DEFENFER_FROM_BORDER
 #define DEFENDER_RIGHT_BORDR MAX_SCREEN_X_DISTANCE - DEFENDER_______WIDTH - DEFENFER_FROM_BORDER
@@ -137,7 +138,7 @@ public:
                         bulletSpeed=ALIEN_BULLET_SPEED01;
                         break;
                     case 2:
-                        bulletSpeed=ALIEN_BULLET_SPEED01;
+                        bulletSpeed=ALIEN_BULLET_SPEED02;
                         break;
                     case 0:
                     default:
@@ -255,7 +256,7 @@ public:
     void manageAlienBullets(sf::RenderWindow& renderWindowsReference) {
         if(activeAlientsInFleet>0) {
             // Prevent continous fire when we have one alien
-            if(activeAlientsInFleet<2) maxAlienBullets = 1;
+            if(activeAlientsInFleet<maxAlienBullets) maxAlienBullets = activeAlientsInFleet;
             for (int i = 0; i < maxAlienBullets; i++) {
                 AlienBullet *alienBullet = &alienBullets[i];
                 if (!alienBullet->isActive()) {
@@ -311,14 +312,16 @@ public:
         defender_m_sprite.setPosition(XPos, DEFENDER__Y_POSITION);
         renderWindowsReference.draw(defender_m_sprite);
     }
-    void moveLeft() {
+    void moveLeft(bool moveFast) {
         if(XPos - DEFENDER_MOVE___DIST > DEFEENDER__FROM_WALL) {
-            XPos -= DEFENDER_MOVE___DIST;
+            XPos -= moveFast? DEFENDER_MV_FAST_DIS : DEFENDER_MOVE___DIST;
         }
     }
-    void moveRight() {
+    void moveRight(bool moveFast) {
         if(XPos < DEFENDER_RIGHT_BORDR  ) {
-            XPos += DEFENDER_MOVE___DIST;
+            std::cout << (moveFast? DEFENDER_MV_FAST_DIS : DEFENDER_MOVE___DIST);
+            std::cout << "\n";
+            XPos += moveFast? DEFENDER_MV_FAST_DIS : DEFENDER_MOVE___DIST;
         }
     }
     void fireShot() {
@@ -365,10 +368,14 @@ private:
  */
 int main() {
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
+    window.setKeyRepeatEnabled(true);
     AlienFleet fleet = AlienFleet(3);
     Defender defender = Defender();
     window.setFramerateLimit(60);
     window.display();
+    sf::Event::EventType previousState = sf::Event::MouseEntered;
+    sf::Keyboard::Key previousKey = sf::Keyboard::Unknown;
+    sf::Keyboard::Key pressedButton;
     while(window.isOpen()) {
         // Clear window
         window.clear();
@@ -388,20 +395,21 @@ int main() {
                 exit(EXIT_SUCCESS);
             }
             if(event.type == sf::Event::KeyPressed) {
-                sf::Keyboard::Key pressedButton = event.key.code;
+                pressedButton = event.key.code;
                 if(pressedButton == sf::Keyboard::Right) {
-                    defender.moveRight();
+                    defender.moveRight(previousState == event.type && previousKey == sf::Keyboard::Right);
                     defender.draw(window);
                 }
                 if(pressedButton == sf::Keyboard::Left) {
-                    defender.moveLeft();
+                    defender.moveLeft(previousState == event.type && previousKey == sf::Keyboard::Left);
                     defender.draw(window);
                 }
                 if(pressedButton == sf::Keyboard::Space) {
                     defender.fireShot();
                 }
-
             }
+            previousState = event.type;
+            previousKey = pressedButton;
         }
         window.display();
     }
