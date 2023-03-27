@@ -36,7 +36,7 @@
 
 #define DEFENDER_BULLET_HGHT 11
 #define DEFENDER_BULLET_WIDT 7
-#define DEFENDER_BULLET_SPED 10
+#define DEFENDER_BULLET_SPED 20
 #define BULLET__TOP___BORDER 12
 
 #define ALIEN_____PATH "./assets/aliens/"
@@ -131,7 +131,7 @@ public:
             m_sprite.setTexture(m_texture);
             m_sprite.setPosition(xCord, yCord);
             renderWindowsReference.draw(m_sprite);
-            yCord++;
+            yCord+=20;
             if(yCord>DEFENDER__Y_POSITION + DEFENDER______HEIGHT) activeBullet=false;
         }
     }
@@ -208,7 +208,6 @@ public:
                     }
                 }
             }
-            std::cout << reachedBottom << std::endl;
             moveLeft = nextDirection;
         }
     }
@@ -230,25 +229,29 @@ public:
         return false;
     }
     void manageAlienBullets(sf::RenderWindow& renderWindowsReference) {
-        for(int i=0; i<maxAlienBullets; i++) {
-            AlienBullet alienBullet = alienBullets[i];
-            if(!alienBullet.isActive()) {
-                int selectedShootingAlien = rand() % activeAlientsInFleet;
-                selectedShootingAlien %= MAX_ALIENS__IN_A_ROW;
-                bool foundAlien = false;
-                // Search backwards
-                for (int row = MAX_NO_OF_ALIEN_ROWS - 1; row >=0 && !foundAlien; row--) {
-                    for (int alienInRow = MAX_ALIENS__IN_A_ROW - 1; alienInRow >=0  && !foundAlien; alienInRow--) {
-                        if(selectedShootingAlien==0) {
-                            foundAlien = true;
-                            float alientXCord = fleet[row][alienInRow]->getX();
-                            float alientYCord = fleet[row][alienInRow]->getY();
-                            alienBullet.start(alientXCord, alientYCord);
+        if(activeAlientsInFleet>0) {
+            for (int i = 0; i < maxAlienBullets; i++) {
+                AlienBullet *alienBullet = &alienBullets[i];
+                if (!alienBullet->isActive()) {
+                    int selectedShootingAlien = rand() % (activeAlientsInFleet + 1);
+                    selectedShootingAlien %= (MAX_ALIENS__IN_A_ROW + 1);
+                    bool foundAlien = false;
+                    // Search backwards
+                    for (int row = MAX_NO_OF_ALIEN_ROWS - 1; row >= 0 && !foundAlien; row--) {
+                        for (int alienInRow = MAX_ALIENS__IN_A_ROW - 1; alienInRow >= 0 && !foundAlien; alienInRow--) {
+                            if (!fleet[row][alienInRow]->isAilve()) continue;
+                            if (selectedShootingAlien == 0) {
+                                foundAlien = true;
+                                float alientXCord = fleet[row][alienInRow]->getX();
+                                float alientYCord = fleet[row][alienInRow]->getY();
+                                alienBullet->start(alientXCord, alientYCord);
+                            }
+                            selectedShootingAlien--;
                         }
                     }
                 }
+                alienBullet->move(renderWindowsReference);
             }
-            alienBullet.move(renderWindowsReference);
         }
     }
 private:
@@ -329,7 +332,7 @@ private:
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
-    AlienFleet fleet = AlienFleet(1);
+    AlienFleet fleet = AlienFleet(2);
     Defender defender = Defender();
     window.setFramerateLimit(60);
     window.display();
@@ -338,6 +341,7 @@ int main() {
         window.clear();
         fleet.march();
         fleet.drawFleet(window);
+        fleet.manageAlienBullets(window);
         defender.draw(window);
         if(defender.firedShot()) {
             defender.moveBullet(window, fleet);
