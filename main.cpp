@@ -135,6 +135,9 @@ public:
             if(yCord>DEFENDER__Y_POSITION + DEFENDER______HEIGHT) activeBullet=false;
         }
     }
+    bool isActive() {
+        return activeBullet;
+    }
 private:
     float xCord, yCord;
     bool activeBullet{false};
@@ -151,7 +154,7 @@ public:
     AlienFleet(int maxAlienShots) {
         // Constructor
         maxAlienBullets = maxAlienShots;
-        for(int i=0; i<maxAlienShots; i++) {
+        for(int i=0; i<maxAlienBullets; i++) {
             AlienBullet alienBullet = AlienBullet();
             alienBullets.push_back(alienBullet);
         }
@@ -225,6 +228,28 @@ public:
             }
         }
         return false;
+    }
+    void manageAlienBullets(sf::RenderWindow& renderWindowsReference) {
+        for(int i=0; i<maxAlienBullets; i++) {
+            AlienBullet alienBullet = alienBullets[i];
+            if(!alienBullet.isActive()) {
+                int selectedShootingAlien = rand() % activeAlientsInFleet;
+                selectedShootingAlien %= MAX_ALIENS__IN_A_ROW;
+                bool foundAlien = false;
+                // Search backwards
+                for (int row = MAX_NO_OF_ALIEN_ROWS - 1; row >=0 && !foundAlien; row--) {
+                    for (int alienInRow = MAX_ALIENS__IN_A_ROW - 1; alienInRow >=0  && !foundAlien; alienInRow--) {
+                        if(selectedShootingAlien==0) {
+                            foundAlien = true;
+                            float alientXCord = fleet[row][alienInRow]->getX();
+                            float alientYCord = fleet[row][alienInRow]->getY();
+                            alienBullet.start(alientXCord, alientYCord);
+                        }
+                    }
+                }
+            }
+            alienBullet.move(renderWindowsReference);
+        }
     }
 private:
     Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
