@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <SFML/Graphics.hpp>
 
 #define MAX_SCREEN_X_DISTANCE 1600
@@ -116,6 +117,13 @@ public:
     ~AlienBullet() {
         // Destructor
     }
+    void start(float xStartCord, float yStartCord) {
+        if (!activeBullet) {
+            xCord = xStartCord + ALIEN___PIXEL__WIDTH / 2;
+            yCord = yStartCord + ALIEN__PIXEL__HEIGHT;
+            activeBullet = true;
+        }
+    }
     void move(sf::RenderWindow& renderWindowsReference) {
         if(activeBullet) {
             std::string alientBulletImage{ALIEN_____PATH};
@@ -143,6 +151,10 @@ public:
     AlienFleet(int maxAlienShots) {
         // Constructor
         maxAlienBullets = maxAlienShots;
+        for(int i=0; i<maxAlienShots; i++) {
+            AlienBullet alienBullet = AlienBullet();
+            alienBullets.push_back(alienBullet);
+        }
         for(int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row ++) {
             for(int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
                 float xCord = ALIEN___STARTING___X + alienInRow * (ALIEN___PIXEL__WIDTH + XDIST_BETWEEN_ALIENS);
@@ -220,6 +232,7 @@ private:
     bool reachedBottom{false};
     short int activeAlientsInFleet{MAX_NO_OF_ALIEN_ROWS * MAX_ALIENS__IN_A_ROW};
     short int maxAlienBullets;
+    std::vector<AlienBullet> alienBullets;
 };
 
 /*
