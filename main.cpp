@@ -25,6 +25,10 @@
 #define ALIENT_MARCH__H_DIST 10
 #define ALIENT_MARCH__V_DIST 20
 
+#define ALIEN_BULLET_SPEED00 20
+#define ALIEN_BULLET_SPEED01 10
+#define ALIEN_BULLET_SPEED02 15
+
 #define DEFENDER______HEIGHT 72
 #define DEFENDER_______WIDTH 72
 #define DEFENFER_FROM_BORDER 5
@@ -122,11 +126,25 @@ public:
     ~AlienBullet() {
         // Destructor
     }
-    void start(float xStartCord, float yStartCord) {
+    void start(float xStartCord, float yStartCord, bool variableBulletSpeed) {
         if (!activeBullet) {
             xCord = xStartCord + ALIEN___PIXEL__WIDTH / 2;
             yCord = yStartCord + ALIEN__PIXEL__HEIGHT;
             activeBullet = true;
+            if(variableBulletSpeed) {
+                switch(rand() % 3) {
+                    case 1:
+                        bulletSpeed=ALIEN_BULLET_SPEED01;
+                        break;
+                    case 2:
+                        bulletSpeed=ALIEN_BULLET_SPEED01;
+                        break;
+                    case 0:
+                    default:
+                        bulletSpeed=ALIEN_BULLET_SPEED00;
+                        break;
+                }
+            } // Initialized with default setting
         }
     }
     void move(sf::RenderWindow& renderWindowsReference) {
@@ -136,7 +154,7 @@ public:
             m_sprite.setTexture(m_texture);
             m_sprite.setPosition(xCord, yCord);
             renderWindowsReference.draw(m_sprite);
-            yCord+=20;
+            yCord+=bulletSpeed;
             if(yCord>DEFENDER__Y_POSITION + DEFENDER______HEIGHT) activeBullet=false;
         }
     }
@@ -146,6 +164,7 @@ public:
 private:
     float xCord, yCord;
     bool activeBullet{false};
+    float bulletSpeed{ALIEN_BULLET_SPEED00};
     sf::Texture m_texture;
     sf::Sprite m_sprite;
 };
@@ -235,6 +254,8 @@ public:
     }
     void manageAlienBullets(sf::RenderWindow& renderWindowsReference) {
         if(activeAlientsInFleet>0) {
+            // Prevent continous fire when we have one alien
+            if(activeAlientsInFleet<2) maxAlienBullets = 1;
             for (int i = 0; i < maxAlienBullets; i++) {
                 AlienBullet *alienBullet = &alienBullets[i];
                 if (!alienBullet->isActive()) {
@@ -249,7 +270,9 @@ public:
                                 foundAlien = true;
                                 float alientXCord = fleet[row][alienInRow]->getX();
                                 float alientYCord = fleet[row][alienInRow]->getY();
-                                alienBullet->start(alientXCord, alientYCord);
+                                bool variableSpeed{false};
+                                if(activeAlientsInFleet>3) variableSpeed=true;
+                                alienBullet->start(alientXCord, alientYCord, variableSpeed);
                             }
                             selectedShootingAlien--;
                         }
@@ -342,7 +365,7 @@ private:
  */
 int main() {
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
-    AlienFleet fleet = AlienFleet(2);
+    AlienFleet fleet = AlienFleet(3);
     Defender defender = Defender();
     window.setFramerateLimit(60);
     window.display();
