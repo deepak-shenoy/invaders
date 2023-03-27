@@ -1,4 +1,8 @@
 #include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
 
@@ -10,6 +14,7 @@
 #define MAX_ALIENS__IN_A_ROW 10
 #define MAX_NO_OF_ALIEN_ROWS 2
 #define NO_OF_ALIEN___IMAGES 7
+#define NO_OF_ALEX_EXPL_IMGS 24
 
 #define XDIST_BETWEEN_ALIENS 20
 #define YDIST_BETWEEN_ALIENS 20
@@ -75,6 +80,19 @@ public:
             m_sprite.setTexture(m_texture);
             m_sprite.setPosition(XLocation, YLocation);
             renderWindowsReference.draw(m_sprite);
+        } else if (exploding) {
+            std::string alientImage{ALIEN_____PATH};
+            std::stringstream filePostfix;
+            filePostfix << std::setfill('0') << std::setw(2) << std::to_string(explodingImage);
+            alientImage.append("explode-" +      filePostfix.str());
+            alientImage.append(".png");
+            m_texture.loadFromFile(alientImage);
+            m_sprite.setTexture(m_texture);
+            m_sprite.setPosition(XLocation, YLocation);
+            renderWindowsReference.draw(m_sprite);
+            explodingImage++;
+            if(explodingImage>NO_OF_ALEX_EXPL_IMGS) exploding=false;
+
         }
     }
     bool isAilve() {
@@ -82,6 +100,9 @@ public:
     }
     void setAliveOff() {
         alive=false;
+    }
+    void setExplosionOn() {
+        exploding=true;
     }
     float getX() {
         return XLocation;
@@ -102,11 +123,10 @@ public:
         // Empty de-constructor
     }
 private:
-    bool lastLeft{false};
-    bool lastRight{false};
     bool alive{true};
-    short int direction{0};
+    bool exploding{false};
     short int imageMovement{0};
+    short int explodingImage{0};
     float XLocation; //{0.0f};
     float YLocation; //{0.0f};
     AlienType alienType;
@@ -245,6 +265,7 @@ public:
                     float xCord{fleet[row][alienInRow]->getX()};
                     if(x>=xCord && x<=(xCord+ALIEN___PIXEL__WIDTH)) {
                         fleet[row][alienInRow]->setAliveOff();
+                        fleet[row][alienInRow]->setExplosionOn();
                         --activeAlientsInFleet;
                         return true;
                     }
