@@ -55,7 +55,8 @@
 #define SHIELD_SPRITE_XCOUNT 2
 #define SHIELD_SPRITE_YCOUNT 2
 #define SHEILD_SPRITE__WIDTH 64
-#define SHIELD_OFSET_X_VALUE (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHEILDS / 2) - ((SHIELD_SPRITE__COUNT * SHEILD_SPRITE__WIDTH) /2)
+#define SHEILD_X_SCREEN_DIST (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHEILDS)
+#define SHIELD_OFSET_X_VALUE (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHEILDS / 2) - ((SHIELD_SPRITE_XCOUNT * SHEILD_SPRITE__WIDTH) /2)
 
 #define ALIEN_____PATH "./assets/aliens/"
 #define DEFENDER__PATH "./assets/defender/"
@@ -325,8 +326,8 @@ private:
  * Sheild
  * ===============================================================================================================
  */
-class ShieldUnit {
-    ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t yComponent) {
+class SheildUnit {
+    SheildUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t yComponent) {
         x = xCoord;
         y = yCoord;
         std::stringstream tmpXNumberConverter, tmpYNumberConverter;
@@ -345,10 +346,20 @@ private:
 class Sheild {
     Sheild() {
         // Constructor
+        for (int si = 0; si < NUMBER___OF__SHEILDS; si++) {
+            for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++) {
+                for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
+                    float xCoord = si * SHEILD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE;
+
+                }
+            }
+        }
     }
     ~Sheild() {
 
     }
+private:
+    SheildUnit* sheildUnit [NUMBER___OF__SHEILDS];
 };
 /*
  * ===============================================================================================================
