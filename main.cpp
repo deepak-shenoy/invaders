@@ -49,6 +49,8 @@
 #define DEFENDER_BULLET_SPED 20
 #define BULLET__TOP___BORDER 12
 
+#define SHEILD_HEIGHT_XCOORD 90
+#define MAX_SHEILD__GRAPHICS 15
 #define NUMBER___OF__SHEILDS 4
 #define SHIELD_SPRITE_XCOUNT 2
 #define SHIELD_SPRITE_YCOUNT 2
@@ -323,6 +325,23 @@ private:
  * Sheild
  * ===============================================================================================================
  */
+class ShieldUnit {
+    ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t yComponent) {
+        x = xCoord;
+        y = yCoord;
+        std::stringstream tmpXNumberConverter, tmpYNumberConverter;
+        tmpXNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(xComponent);
+        tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(yComponent);
+        baseFileName = "shield-" + tmpXNumberConverter.str() + "-" + tmpYNumberConverter.str() + "-";
+    }
+private:
+    float x;
+    float y;
+    uint8_t shieldVisibleState{MAX_SHEILD__GRAPHICS};
+    std::string baseFileName;
+    bool up{true};
+};
+
 class Sheild {
     Sheild() {
         // Constructor
