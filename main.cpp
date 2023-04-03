@@ -49,12 +49,13 @@
 #define DEFENDER_BULLET_SPED 20
 #define BULLET__TOP___BORDER 12
 
-#define SHEILD_HEIGHT_XCOORD 90
+#define SHEILD_HEIGHT_YCOORD 90
 #define MAX_SHEILD__GRAPHICS 15
 #define NUMBER___OF__SHEILDS 4
 #define SHIELD_SPRITE_XCOUNT 2
 #define SHIELD_SPRITE_YCOUNT 2
 #define SHEILD_SPRITE__WIDTH 64
+#define SHEILD_SPRITE_HEIGHT 32
 #define SHEILD_X_SCREEN_DIST (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHEILDS)
 #define SHIELD_OFSET_X_VALUE (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHEILDS / 2) - ((SHIELD_SPRITE_XCOUNT * SHEILD_SPRITE__WIDTH) /2)
 
@@ -327,6 +328,7 @@ private:
  * ===============================================================================================================
  */
 class SheildUnit {
+public:
     SheildUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t yComponent) {
         x = xCoord;
         y = yCoord;
@@ -343,19 +345,20 @@ private:
     bool up{true};
 };
 
-class Sheild {
-    Sheild() {
+class Sheilds {
+    Sheilds() {
         // Constructor
         for (int si = 0; si < NUMBER___OF__SHEILDS; si++) {
             for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++) {
                 for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
                     float xCoord = si * SHEILD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE;
-
+                    float yCoord = sy * SHEILD_SPRITE_HEIGHT + SHEILD_HEIGHT_YCOORD;
+                    SheildUnit sheildUnit = SheildUnit(xCoord, yCoord, sx, sy);
                 }
             }
         }
     }
-    ~Sheild() {
+    ~Sheilds() {
 
     }
 private:
