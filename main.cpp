@@ -346,6 +346,7 @@ private:
 };
 
 class Sheilds {
+public:
     Sheilds() {
         // Constructor
         for (int si = 0; si < NUMBER___OF__SHEILDS; si++) {
@@ -442,6 +443,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
     window.setKeyRepeatEnabled(true);
     AlienFleet fleet = AlienFleet(3);
+    Sheilds sheilds = Sheilds();
     Defender defender = Defender();
     window.setFramerateLimit(60);
     window.display();
