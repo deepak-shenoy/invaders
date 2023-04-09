@@ -49,16 +49,16 @@
 #define DEFENDER_BULLET_SPED 20
 #define BULLET__TOP___BORDER 12
 
-#define SHIELD_HEIGHT_YCOORD 90
 #define MAX_SHIELD__GRAPHICS 15
 #define NUMBER___OF__SHIELDS 4
 #define SHIELD_SPRITE_XCOUNT 2
 #define SHIELD_SPRITE_YCOUNT 2
 #define SHIELD_SPRITE__WIDTH 64
 #define SHIELD_SPRITE_HEIGHT 32
-#define SHIELD_BASE_FILE_NAM "shield"
+#define SHIELD_BASE_FILE_NAM "./assets/shield/shield-"
 #define SHIELD_X_SCREEN_DIST (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHIELDS)
 #define SHIELD_OFSET_X_VALUE (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHIELDS / 2) - ((SHIELD_SPRITE_XCOUNT * SHIELD_SPRITE__WIDTH) /2)
+#define SHIELD_HEIGHT_YCOORD DEFENDER__Y_POSITION - (SHIELD_SPRITE_HEIGHT * SHIELD_SPRITE_YCOUNT) - 20
 
 #define ALIEN_____PATH "./assets/aliens/"
 #define DEFENDER__PATH "./assets/defender/"
@@ -106,7 +106,7 @@ public:
 
         }
     }
-    bool isAilve() {
+    bool isAlive() {
         return alive;
     }
     void setAliveOff() {
@@ -237,13 +237,13 @@ public:
             bool nextDirection{moveLeft};
             for (int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row++) {
                 for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
-                    if (moveLeft && fleet[row][alienInRow]->isAilve()) {
+                    if (moveLeft && fleet[row][alienInRow]->isAlive()) {
                         float xCord{fleet[row][alienInRow]->getX()};
                         if (xCord <= ALIEN__LEFT___MARGIN) nextDirection = !moveLeft;
                         xCord -= ALIENT_MARCH__H_DIST;
                         fleet[row][alienInRow]->marchStepMovement();
                         fleet[row][alienInRow]->setX(xCord);
-                    } else if (fleet[row][alienInRow]->isAilve()) {
+                    } else if (fleet[row][alienInRow]->isAlive()) {
                         float xCord{fleet[row][alienInRow]->getX()};
                         if (xCord >= ALIEN__RIGHT__MARGIN) nextDirection = !moveLeft;
                         xCord += ALIENT_MARCH__H_DIST;
@@ -255,7 +255,7 @@ public:
             if (nextDirection != moveLeft) {
                 for (int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row++) {
                     for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
-                        if (fleet[row][alienInRow]->isAilve()) {
+                        if (fleet[row][alienInRow]->isAlive()) {
                             float yCord{fleet[row][alienInRow]->getY()};
                             yCord += ALIENT_MARCH__V_DIST;
                             fleet[row][alienInRow]->setY(yCord);
@@ -267,17 +267,17 @@ public:
             moveLeft = nextDirection;
         }
     }
-    bool alientAreaImpacted(float x, float y) {
+    bool alienAreaImpacted(float x, float y) {
         for (int row = 0; row < MAX_NO_OF_ALIEN_ROWS; row++) {
             for (int alienInRow = 0; alienInRow < MAX_ALIENS__IN_A_ROW; alienInRow++) {
-                if(fleet[row][alienInRow]->isAilve()){
+                if(fleet[row][alienInRow]->isAlive()){
                     float yCord{fleet[row][alienInRow]->getY()};
                     if(y<yCord || y>(yCord+ALIEN__PIXEL__HEIGHT)) break;
                     float xCord{fleet[row][alienInRow]->getX()};
                     if(x>=xCord && x<=(xCord+ALIEN___PIXEL__WIDTH)) {
                         fleet[row][alienInRow]->setAliveOff();
                         fleet[row][alienInRow]->setExplosionOn();
-                        --activeAlientsInFleet;
+                        --activeAliensInFleet;
                         return true;
                     }
                 }
@@ -286,26 +286,26 @@ public:
         return false;
     }
     void manageAlienBullets(sf::RenderWindow& renderWindowsReference) {
-        if(activeAlientsInFleet>0) {
+        if(activeAliensInFleet > 0) {
             // Prevent continous fire when we have one alien
-            if(activeAlientsInFleet<maxAlienBullets) maxAlienBullets = activeAlientsInFleet;
+            if(activeAliensInFleet < maxAlienBullets) maxAlienBullets = activeAliensInFleet;
             for (int i = 0; i < maxAlienBullets; i++) {
                 AlienBullet *alienBullet = &alienBullets[i];
                 if (!alienBullet->isActive()) {
-                    int selectedShootingAlien = rand() % (activeAlientsInFleet + 1);
+                    int selectedShootingAlien = rand() % (activeAliensInFleet + 1);
                     selectedShootingAlien %= (MAX_ALIENS__IN_A_ROW + 1);
                     bool foundAlien = false;
                     // Search backwards
                     for (int row = MAX_NO_OF_ALIEN_ROWS - 1; row >= 0 && !foundAlien; row--) {
                         for (int alienInRow = MAX_ALIENS__IN_A_ROW - 1; alienInRow >= 0 && !foundAlien; alienInRow--) {
-                            if (!fleet[row][alienInRow]->isAilve()) continue;
+                            if (!fleet[row][alienInRow]->isAlive()) continue;
                             if (selectedShootingAlien == 0) {
                                 foundAlien = true;
-                                float alientXCord = fleet[row][alienInRow]->getX();
-                                float alientYCord = fleet[row][alienInRow]->getY();
+                                float alienXCord = fleet[row][alienInRow]->getX();
+                                float alienYCord = fleet[row][alienInRow]->getY();
                                 bool variableSpeed{false};
-                                if(activeAlientsInFleet>3) variableSpeed=true;
-                                alienBullet->start(alientXCord, alientYCord, variableSpeed);
+                                if(activeAliensInFleet > 3) variableSpeed=true;
+                                alienBullet->start(alienXCord, alienYCord, variableSpeed);
                             }
                             selectedShootingAlien--;
                         }
@@ -319,7 +319,7 @@ private:
     Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
     bool moveLeft{true};
     bool reachedBottom{false};
-    short int activeAlientsInFleet{MAX_NO_OF_ALIEN_ROWS * MAX_ALIENS__IN_A_ROW};
+    short int activeAliensInFleet{MAX_NO_OF_ALIEN_ROWS * MAX_ALIENS__IN_A_ROW};
     short int maxAlienBullets;
     std::vector<AlienBullet> alienBullets;
 };
@@ -345,10 +345,17 @@ public:
         tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
         shieldStateCode = tmpShieldStateCode.str();
     }
-    void drawUnit() {
-        std::string fileName = "shield" + unitWidthCode + "-" + unitHeightCode;
-        shieldTexture.loadFromFile()
-
+    void drawUnit(sf::RenderWindow& renderWindowRef) {
+        // Only draw the shield if any part of it exists
+        if(up) {
+//            std::cout<<"In the draw unit"<<std::endl;
+//            std::string fileName = "shield" + unitWidthCode + "-" + unitHeightCode;
+            shieldTexture.loadFromFile(
+                    SHIELD_BASE_FILE_NAM + unitWidthCode + "-" + unitHeightCode + "-" + shieldStateCode + ".png");
+            shieldSprite.setTexture(shieldTexture);
+            shieldSprite.setPosition(x, y);
+            renderWindowRef.draw(shieldSprite);
+        }
     }
 private:
     float x;
@@ -373,8 +380,7 @@ public:
                 for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
                     float xCoord = si * SHIELD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE;
                     float yCoord = sy * SHIELD_SPRITE_HEIGHT + SHIELD_HEIGHT_YCOORD;
-                    ShieldUnit shieldUnit = *(new ShieldUnit(xCoord, yCoord, sx, sy));
-                    sheildUnits[si][sx][sy] = &shieldUnit;
+                    shieldUnits[si][sx][sy] = new ShieldUnit(xCoord, yCoord, sx, sy);
                 }
             }
         }
@@ -382,8 +388,18 @@ public:
     ~Shields() {
         // Destructor
     }
+    void drawShields(sf::RenderWindow& renderWindowRef) {
+        for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
+            for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
+                for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
+                    std::cout<<si<<" ---- ("<<sx<<","<<sy<<")"<<std::endl;
+                    shieldUnits[si][sx][sy]->drawUnit(renderWindowRef);
+                }
+            }
+        }
+    }
 private:
-    ShieldUnit* sheildUnits [NUMBER___OF__SHIELDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
+    ShieldUnit* shieldUnits [NUMBER___OF__SHIELDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
 };
 /*
  * ===============================================================================================================
@@ -435,7 +451,7 @@ public:
                 shotFired = false;
             }
             renderWindowsReference.draw(bullet_m_sprite);
-            if (alienFleet.alientAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
+            if (alienFleet.alienAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
         }
     }
     bool firedShot() {
@@ -480,6 +496,7 @@ int main() {
         if(defender.firedShot()) {
             defender.moveBullet(window, fleet);
         }
+        sheilds.drawShields(window);
         sf::Event event;
         while(window.pollEvent(event)){
             // Terminate application
