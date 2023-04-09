@@ -46,7 +46,7 @@
 
 #define DEFENDER_BULLET_HGHT 11
 #define DEFENDER_BULLET_WIDT 7
-#define DEFENDER_BULLET_SPED 20
+#define DEFENDER_BULLET_SPED 5
 #define BULLET__TOP___BORDER 12
 
 #define MAX_SHIELD__GRAPHICS 16
@@ -64,6 +64,7 @@
 #define DEFENDER__PATH "./assets/defender/"
 
 enum AlienType {defender, striker};
+enum BulletType {defenderBullet, strikerBullet};
 
 /*
  * ===============================================================================================================
@@ -379,11 +380,10 @@ public:
     bool componentIsUp() {
         return up;
     }
-    void decreaseShieldState() {
-        if (shieldState<MAX_SHIELD__GRAPHICS) {
+    void decreaseShieldState(BulletType bulletType) {
+        if (up && ++shieldState<MAX_SHIELD__GRAPHICS) {
             std::cout<<"Shot "<<shieldState<<std::endl;
-            shieldState++;
-        }
+        } else up = false;
     }
 private:
     float x;
@@ -392,7 +392,6 @@ private:
     unsigned short int unitHeight;
     std::string unitWidthCode;
     unsigned short int unitWidth;
-    uint8_t shieldVisibleState{MAX_SHIELD__GRAPHICS};
     std::string baseFileName;
     bool up{true};
     sf::Texture shieldTexture;
@@ -422,29 +421,27 @@ public:
         for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
             for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
                 for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
-//                    std::cout<<si<<" ---- ("<<sx<<","<<sy<<")"<<std::endl;
                     shieldUnits[si][sx][sy]->drawUnit(renderWindowRef);
                 }
             }
         }
     }
-    bool shieldAreaImpacted(float x, float y) {
+    bool shieldAreaImpacted(float x, float y, BulletType bulletType) {
         for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
             for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
                 for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
                     if(shieldUnits[si][sx][sy]->componentIsUp()) {
                         float shieldX{shieldUnits[si][sx][sy]->getX()};
                         float shieldY{shieldUnits[si][sx][sy]->getY()};
-                        if(x<shieldX || x>(shieldX + SHIELD_SPRITE__WIDTH)) break;
-                        if(y<shieldY || y>(shieldY + SHIELD_SPRITE_HEIGHT)) break;
-                        shieldUnits[si][sx][sy]->decreaseShieldState();
-                        return true;
+                        if(x>=shieldX && x<=(shieldX + SHIELD_SPRITE__WIDTH) && y>=shieldY && y<=(shieldY + SHIELD_SPRITE_HEIGHT)) {
+                            shieldUnits[si][sx][sy]->decreaseShieldState(bulletType);
+                            return true;
+                        }
                     }
                 }
             }
         }
         return false;
-
     }
 private:
     ShieldUnit* shieldUnits [NUMBER___OF__SHIELDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
@@ -500,7 +497,7 @@ public:
             }
             renderWindowsReference.draw(bullet_m_sprite);
             if(alienFleet.alienAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
-            if(shields.shieldAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
+            if(shields.shieldAreaImpacted(bulletXPos, bulletYPos, defenderBullet)) shotFired = false;
         }
     }
     bool firedShot() {
