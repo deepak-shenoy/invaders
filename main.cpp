@@ -344,14 +344,29 @@ public:
 
         tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
         shieldStateCode = tmpShieldStateCode.str();
+
+        unitWidth = xComponent;
+        unitHeight = yComponent;
+
     }
     void drawUnit(sf::RenderWindow& renderWindowRef) {
         // Only draw the shield if any part of it exists
         if(up) {
-//            std::cout<<"In the draw unit"<<std::endl;
-//            std::string fileName = "shield" + unitWidthCode + "-" + unitHeightCode;
+            std::stringstream tmpXNumberConverter, tmpYNumberConverter, tmpShieldStateCode;
+            tmpXNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(unitWidth);
+            unitHeightCode = tmpXNumberConverter.str();
+
+            tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(unitHeight);
+            unitWidthCode = tmpYNumberConverter.str();
+
+            shieldState = 0;
+
+            tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
+            shieldStateCode = tmpShieldStateCode.str();
+
             shieldTexture.loadFromFile(
-                    SHIELD_BASE_FILE_NAM + unitWidthCode + "-" + unitHeightCode + "-" + shieldStateCode + ".png");
+                    SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-" + shieldStateCode + ".png");
+            std::cout<<SHIELD_BASE_FILE_NAM + unitWidthCode + "-" + unitHeightCode + "-" + shieldStateCode + ".png"<<std::endl;
             shieldSprite.setTexture(shieldTexture);
             shieldSprite.setPosition(x, y);
             renderWindowRef.draw(shieldSprite);
@@ -361,7 +376,9 @@ private:
     float x;
     float y;
     std::string unitHeightCode;
+    unsigned short int unitHeight;
     std::string unitWidthCode;
+    unsigned short int unitWidth;
     uint8_t shieldVisibleState{MAX_SHIELD__GRAPHICS};
     std::string baseFileName;
     bool up{true};
@@ -378,7 +395,7 @@ public:
         for (int si = 0; si < NUMBER___OF__SHIELDS; si++) {
             for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++) {
                 for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
-                    float xCoord = si * SHIELD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE;
+                    float xCoord = si * SHIELD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE + (sx * SHIELD_SPRITE__WIDTH);
                     float yCoord = sy * SHIELD_SPRITE_HEIGHT + SHIELD_HEIGHT_YCOORD;
                     shieldUnits[si][sx][sy] = new ShieldUnit(xCoord, yCoord, sx, sy);
                 }
