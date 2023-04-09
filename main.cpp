@@ -7,7 +7,7 @@
 #include <SFML/Graphics.hpp>
 
 #define MAX_SCREEN_X_DISTANCE 1600
-#define MAX_SCREEN_Y_DISTANCE 1600
+#define MAX_SCREEN_Y_DISTANCE 900
 #define BORDER_HEIGHT_BOTTOM 10
 #define BORDER_HEIGHT____TOP 80
 
@@ -36,13 +36,13 @@
 
 #define DEFENDER______HEIGHT 72
 #define DEFENDER_______WIDTH 72
-#define DEFENFER_FROM_BORDER 5
-#define DEFEENDER__FROM_WALL 10
+#define DEFENDER_FROM_BORDER 5
+#define DEFENDER___FROM_WALL 10
 #define DEFENDER_MOVE___DIST 15
 #define DEFENDER_MV_FAST_DIS 30
-#define DEFENDER__Y_POSITION MAX_SCREEN_Y_DISTANCE - DEFENDER______HEIGHT- DEFENFER_FROM_BORDER - BORDER_HEIGHT_BOTTOM
-#define DEFENDER_LEFT_BORDER DEFENFER_FROM_BORDER
-#define DEFENDER_RIGHT_BORDR MAX_SCREEN_X_DISTANCE - DEFENDER_______WIDTH - DEFENFER_FROM_BORDER
+#define DEFENDER__Y_POSITION MAX_SCREEN_Y_DISTANCE - DEFENDER______HEIGHT- DEFENDER_FROM_BORDER - BORDER_HEIGHT_BOTTOM
+#define DEFENDER_LEFT_BORDER DEFENDER_FROM_BORDER
+#define DEFENDER_RIGHT_BORDR MAX_SCREEN_X_DISTANCE - DEFENDER_______WIDTH - DEFENDER_FROM_BORDER
 
 #define DEFENDER_BULLET_HGHT 11
 #define DEFENDER_BULLET_WIDT 7
@@ -327,9 +327,9 @@ private:
  * Sheild
  * ===============================================================================================================
  */
-class SheildUnit {
+class ShieldUnit {
 public:
-    SheildUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t yComponent) {
+    ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t yComponent) {
         x = xCoord;
         y = yCoord;
         std::stringstream tmpXNumberConverter, tmpYNumberConverter;
@@ -345,25 +345,26 @@ private:
     bool up{true};
 };
 
-class Sheilds {
+class Shields {
 public:
-    Sheilds() {
+    Shields() {
         // Constructor
         for (int si = 0; si < NUMBER___OF__SHEILDS; si++) {
             for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++) {
                 for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
                     float xCoord = si * SHEILD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE;
                     float yCoord = sy * SHEILD_SPRITE_HEIGHT + SHEILD_HEIGHT_YCOORD;
-                    SheildUnit sheildUnit = SheildUnit(xCoord, yCoord, sx, sy);
+                    ShieldUnit shieldUnit = *(new ShieldUnit(xCoord, yCoord, sx, sy));
+                    sheildUnits[si][sx][sy] = &shieldUnit;
                 }
             }
         }
     }
-    ~Sheilds() {
+    ~Shields() {
 
     }
 private:
-    SheildUnit* sheildUnit [NUMBER___OF__SHEILDS];
+    ShieldUnit* sheildUnits [NUMBER___OF__SHEILDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
 };
 /*
  * ===============================================================================================================
@@ -386,7 +387,7 @@ public:
         renderWindowsReference.draw(defender_m_sprite);
     }
     void moveLeft(bool moveFast) {
-        if(XPos - DEFENDER_MOVE___DIST > DEFEENDER__FROM_WALL) {
+        if(XPos - DEFENDER_MOVE___DIST > DEFENDER___FROM_WALL) {
             XPos -= moveFast? DEFENDER_MV_FAST_DIS : DEFENDER_MOVE___DIST;
         }
     }
@@ -443,7 +444,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
     window.setKeyRepeatEnabled(true);
     AlienFleet fleet = AlienFleet(3);
-    Sheilds sheilds = Sheilds();
+    Shields sheilds = Shields();
     Defender defender = Defender();
     window.setFramerateLimit(60);
     window.display();
