@@ -49,7 +49,7 @@
 #define DEFENDER_BULLET_SPED 20
 #define BULLET__TOP___BORDER 12
 
-#define MAX_SHIELD__GRAPHICS 15
+#define MAX_SHIELD__GRAPHICS 16
 #define NUMBER___OF__SHIELDS 4
 #define SHIELD_SPRITE_XCOUNT 2
 #define SHIELD_SPRITE_YCOUNT 2
@@ -58,7 +58,7 @@
 #define SHIELD_BASE_FILE_NAM "./assets/shield/shield-"
 #define SHIELD_X_SCREEN_DIST (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHIELDS)
 #define SHIELD_OFSET_X_VALUE (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHIELDS / 2) - ((SHIELD_SPRITE_XCOUNT * SHIELD_SPRITE__WIDTH) /2)
-#define SHIELD_HEIGHT_YCOORD DEFENDER__Y_POSITION - (SHIELD_SPRITE_HEIGHT * SHIELD_SPRITE_YCOUNT) - 20
+#define SHIELD_HEIGHT_YCOORD DEFENDER__Y_POSITION - (SHIELD_SPRITE_HEIGHT * SHIELD_SPRITE_YCOUNT) - 100
 
 #define ALIEN_____PATH "./assets/aliens/"
 #define DEFENDER__PATH "./assets/defender/"
@@ -359,17 +359,30 @@ public:
             tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(unitHeight);
             unitWidthCode = tmpYNumberConverter.str();
 
-            shieldState = 0;
-
             tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
             shieldStateCode = tmpShieldStateCode.str();
 
             shieldTexture.loadFromFile(
                     SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-" + shieldStateCode + ".png");
-            std::cout<<SHIELD_BASE_FILE_NAM + unitWidthCode + "-" + unitHeightCode + "-" + shieldStateCode + ".png"<<std::endl;
+//            std::cout<<SHIELD_BASE_FILE_NAM + unitWidthCode + "-" + unitHeightCode + "-" + shieldStateCode + ".png"<<std::endl;
             shieldSprite.setTexture(shieldTexture);
             shieldSprite.setPosition(x, y);
             renderWindowRef.draw(shieldSprite);
+        }
+    }
+    float getX() {
+        return x;
+    }
+    float getY() {
+        return y;
+    }
+    bool componentIsUp() {
+        return up;
+    }
+    void decreaseShieldState() {
+        if (shieldState<MAX_SHIELD__GRAPHICS) {
+            std::cout<<"Shot "<<shieldState<<std::endl;
+            shieldState++;
         }
     }
 private:
@@ -384,7 +397,7 @@ private:
     bool up{true};
     sf::Texture shieldTexture;
     sf::Sprite shieldSprite;
-    unsigned short int shieldState;
+    unsigned short int shieldState{0};
     std::string shieldStateCode;
 };
 
@@ -409,11 +422,29 @@ public:
         for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
             for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
                 for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
-                    std::cout<<si<<" ---- ("<<sx<<","<<sy<<")"<<std::endl;
+//                    std::cout<<si<<" ---- ("<<sx<<","<<sy<<")"<<std::endl;
                     shieldUnits[si][sx][sy]->drawUnit(renderWindowRef);
                 }
             }
         }
+    }
+    bool shieldAreaImpacted(float x, float y) {
+        for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
+            for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
+                for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
+                    if(shieldUnits[si][sx][sy]->componentIsUp()) {
+                        float shieldX{shieldUnits[si][sx][sy]->getX()};
+                        float shieldY{shieldUnits[si][sx][sy]->getY()};
+                        if(x<shieldX || x>(shieldX + SHIELD_SPRITE__WIDTH)) break;
+                        if(y<shieldY || y>(shieldY + SHIELD_SPRITE_HEIGHT)) break;
+                        shieldUnits[si][sx][sy]->decreaseShieldState();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
     }
 private:
     ShieldUnit* shieldUnits [NUMBER___OF__SHIELDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
@@ -457,7 +488,7 @@ public:
             bulletYPos=DEFENDER__Y_POSITION - DEFENDER_BULLET_HGHT;
         }
     }
-    void moveBullet(sf::RenderWindow& renderWindowsReference, AlienFleet& alienFleet) {
+    void moveBullet(sf::RenderWindow& renderWindowsReference, AlienFleet& alienFleet, Shields& shields) {
         if(shotFired) {
             bullet_m_texture.loadFromFile(bulletImage + "bullet-00.png");
             bullet_m_sprite.setTexture(bullet_m_texture);
@@ -468,7 +499,8 @@ public:
                 shotFired = false;
             }
             renderWindowsReference.draw(bullet_m_sprite);
-            if (alienFleet.alienAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
+            if(alienFleet.alienAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
+            if(shields.shieldAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
         }
     }
     bool firedShot() {
@@ -496,7 +528,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
     window.setKeyRepeatEnabled(true);
     AlienFleet fleet = AlienFleet(3);
-    Shields sheilds = Shields();
+    Shields shields = Shields();
     Defender defender = Defender();
     window.setFramerateLimit(60);
     window.display();
@@ -506,14 +538,14 @@ int main() {
     while(window.isOpen()) {
         // Clear window
         window.clear();
+        shields.drawShields(window);
         fleet.march();
         fleet.drawFleet(window);
         fleet.manageAlienBullets(window);
         defender.draw(window);
         if(defender.firedShot()) {
-            defender.moveBullet(window, fleet);
+            defender.moveBullet(window, fleet, shields);
         }
-        sheilds.drawShields(window);
         sf::Event event;
         while(window.pollEvent(event)){
             // Terminate application
@@ -538,7 +570,7 @@ int main() {
             }
             previousState = event.type;
             previousKey = pressedButton;
-        }
+          }
         window.display();
     }
     return 0;
