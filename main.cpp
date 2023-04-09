@@ -49,15 +49,16 @@
 #define DEFENDER_BULLET_SPED 20
 #define BULLET__TOP___BORDER 12
 
-#define SHEILD_HEIGHT_YCOORD 90
-#define MAX_SHEILD__GRAPHICS 15
-#define NUMBER___OF__SHEILDS 4
+#define SHIELD_HEIGHT_YCOORD 90
+#define MAX_SHIELD__GRAPHICS 15
+#define NUMBER___OF__SHIELDS 4
 #define SHIELD_SPRITE_XCOUNT 2
 #define SHIELD_SPRITE_YCOUNT 2
-#define SHEILD_SPRITE__WIDTH 64
-#define SHEILD_SPRITE_HEIGHT 32
-#define SHEILD_X_SCREEN_DIST (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHEILDS)
-#define SHIELD_OFSET_X_VALUE (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHEILDS / 2) - ((SHIELD_SPRITE_XCOUNT * SHEILD_SPRITE__WIDTH) /2)
+#define SHIELD_SPRITE__WIDTH 64
+#define SHIELD_SPRITE_HEIGHT 32
+#define SHIELD_BASE_FILE_NAM "shield"
+#define SHIELD_X_SCREEN_DIST (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHIELDS)
+#define SHIELD_OFSET_X_VALUE (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHIELDS / 2) - ((SHIELD_SPRITE_XCOUNT * SHIELD_SPRITE__WIDTH) /2)
 
 #define ALIEN_____PATH "./assets/aliens/"
 #define DEFENDER__PATH "./assets/defender/"
@@ -324,7 +325,7 @@ private:
 };
 /*
  * ===============================================================================================================
- * Sheild
+ * Shield
  * ===============================================================================================================
  */
 class ShieldUnit {
@@ -332,28 +333,46 @@ public:
     ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t yComponent) {
         x = xCoord;
         y = yCoord;
-        std::stringstream tmpXNumberConverter, tmpYNumberConverter;
+        std::stringstream tmpXNumberConverter, tmpYNumberConverter, tmpShieldStateCode;
         tmpXNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(xComponent);
+        unitHeightCode = tmpXNumberConverter.str();
+
         tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(yComponent);
-        baseFileName = "shield-" + tmpXNumberConverter.str() + "-" + tmpYNumberConverter.str() + "-";
+        unitWidthCode = tmpYNumberConverter.str();
+
+        shieldState = 0;
+
+        tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
+        shieldStateCode = tmpShieldStateCode.str();
+    }
+    void drawUnit() {
+        std::string fileName = "shield" + unitWidthCode + "-" + unitHeightCode;
+        shieldTexture.loadFromFile()
+
     }
 private:
     float x;
     float y;
-    uint8_t shieldVisibleState{MAX_SHEILD__GRAPHICS};
+    std::string unitHeightCode;
+    std::string unitWidthCode;
+    uint8_t shieldVisibleState{MAX_SHIELD__GRAPHICS};
     std::string baseFileName;
     bool up{true};
+    sf::Texture shieldTexture;
+    sf::Sprite shieldSprite;
+    unsigned short int shieldState;
+    std::string shieldStateCode;
 };
 
 class Shields {
 public:
     Shields() {
         // Constructor
-        for (int si = 0; si < NUMBER___OF__SHEILDS; si++) {
+        for (int si = 0; si < NUMBER___OF__SHIELDS; si++) {
             for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++) {
                 for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
-                    float xCoord = si * SHEILD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE;
-                    float yCoord = sy * SHEILD_SPRITE_HEIGHT + SHEILD_HEIGHT_YCOORD;
+                    float xCoord = si * SHIELD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE;
+                    float yCoord = sy * SHIELD_SPRITE_HEIGHT + SHIELD_HEIGHT_YCOORD;
                     ShieldUnit shieldUnit = *(new ShieldUnit(xCoord, yCoord, sx, sy));
                     sheildUnits[si][sx][sy] = &shieldUnit;
                 }
@@ -361,10 +380,10 @@ public:
         }
     }
     ~Shields() {
-
+        // Destructor
     }
 private:
-    ShieldUnit* sheildUnits [NUMBER___OF__SHEILDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
+    ShieldUnit* sheildUnits [NUMBER___OF__SHIELDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
 };
 /*
  * ===============================================================================================================
