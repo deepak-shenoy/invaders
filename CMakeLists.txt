@@ -3,7 +3,7 @@ project(invader_v_01)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(invader_v_01 main.cpp shields/shields.cpp shields/shields.h configuration/settings.cpp configuration/settings.h defender/defender.cpp defender/defender.h shields/shieldunit.cpp)
+add_executable(invader_v_01 main.cpp shields/shields.cpp shields/shields.h configuration/settings.cpp configuration/settings.h defender/defender.cpp defender/defender.h shields/shieldunit.cpp aliens/aliens.h aliens/alien.cpp)
 
 find_package(SFML COMPONENTS system window graphics network audio REQUIRED)
 include_directories(${SFML_INCLUDE_DIRS} configuration defender aliens shields)

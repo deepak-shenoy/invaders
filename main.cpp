@@ -11,31 +11,7 @@
 #include "settings.h"
 #include "shields.h"
 #include "defender.h"
-
-#define MAX_ALIENS__IN_A_ROW 10
-#define MAX_NO_OF_ALIEN_ROWS 2
-#define NO_OF_ALIEN___IMAGES 7
-#define NO_OF_ALEX_EXPL_IMGS 24
-
-#define XDIST_BETWEEN_ALIENS 20
-#define YDIST_BETWEEN_ALIENS 20
-#define ALIEN___PIXEL__WIDTH 64
-#define ALIEN__PIXEL__HEIGHT 64
-
-#define ALIEN___STARTING___X 100
-#define ALIEN___STARTING___Y 100
-
-#define ALIEN__LEFT___MARGIN 10
-#define ALIEN__RIGHT__MARGIN MAX_SCREEN_X_DISTANCE - ALIEN___PIXEL__WIDTH - BORDER_HEIGHT_BOTTOM
-#define ALIEN__BOTTOM_MARGIN MAX_SCREEN_Y_DISTANCE - ALIEN__PIXEL__HEIGHT- BORDER_HEIGHT_BOTTOM
-#define ALIENT_MARCH__H_DIST 10
-#define ALIENT_MARCH__V_DIST 20
-
-#define ALIEN_BULLET_SPEED00 20
-#define ALIEN_BULLET_SPEED01 10
-#define ALIEN_BULLET_SPEED02 15
-
-#define ALIEN_____PATH "./assets/aliens/"
+#include "aliens.h"
 
 
 /*
@@ -43,80 +19,7 @@
  * Single Alien Definition
  * ===============================================================================================================
  */
-class Alien {
-public:
-    Alien(float x, float y, AlienType alienType) {
-        XLocation = x;
-        YLocation = y;
-        this->alienType = alienType;
-        // Empty constructor
-    }
-    void draw(sf::RenderWindow& renderWindowsReference) {
-        if(alive) {
-            std::string alientImage{ALIEN_____PATH};
-            if (alienType == defender) {
-                alientImage.append("row-01-0" + std::to_string(imageMovement));
-            } else if (alienType == striker) {
-                alientImage.append("row-02-0" + std::to_string(imageMovement));
-            }
-            alientImage.append(".png");
-            m_texture.loadFromFile(alientImage);
-            m_sprite.setTexture(m_texture);
-            m_sprite.setPosition(XLocation, YLocation);
-            renderWindowsReference.draw(m_sprite);
-        } else if (exploding) {
-            std::string alientImage{ALIEN_____PATH};
-            std::stringstream filePostfix;
-            filePostfix << std::setfill('0') << std::setw(2) << std::to_string(explodingImage);
-            alientImage.append("explode-" +      filePostfix.str());
-            alientImage.append(".png");
-            m_texture.loadFromFile(alientImage);
-            m_sprite.setTexture(m_texture);
-            m_sprite.setPosition(XLocation, YLocation);
-            renderWindowsReference.draw(m_sprite);
-            explodingImage++;
-            if(explodingImage>NO_OF_ALEX_EXPL_IMGS) exploding=false;
 
-        }
-    }
-    bool isAlive() {
-        return alive;
-    }
-    void setAliveOff() {
-        alive=false;
-    }
-    void setExplosionOn() {
-        exploding=true;
-    }
-    float getX() {
-        return XLocation;
-    }
-    void setX(float xCordVal) {
-        XLocation = xCordVal;
-    }
-    float getY() {
-        return YLocation;
-    }
-    void setY(float yCordVal) {
-        YLocation = yCordVal;
-    }
-    void marchStepMovement() {
-        ++imageMovement %= NO_OF_ALIEN___IMAGES;
-    }
-    ~Alien() {
-        // Empty de-constructor
-    }
-private:
-    bool alive{true};
-    bool exploding{false};
-    short int imageMovement{0};
-    short int explodingImage{0};
-    float XLocation; //{0.0f};
-    float YLocation; //{0.0f};
-    AlienType alienType;
-    sf::Texture m_texture;
-    sf::Sprite m_sprite;
-};
 
 /*
  * ===============================================================================================================
