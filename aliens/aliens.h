@@ -79,4 +79,22 @@ private:
     sf::Sprite m_sprite;
 };
 
+class AlienFleet {
+public:
+    AlienFleet(int maxAlienShots);
+    ~AlienFleet();
+    void drawFleet(sf::RenderWindow& renderWindowsReference);
+    void march();
+    bool alienAreaImpacted(float x, float y);
+    void manageAlienBullets(sf::RenderWindow& renderWindowsReference, Shields& shields);
+private:
+    Alien* fleet[MAX_NO_OF_ALIEN_ROWS][MAX_ALIENS__IN_A_ROW];
+    bool moveLeft{true};
+    bool reachedBottom{false};
+    short int activeAliensInFleet{MAX_NO_OF_ALIEN_ROWS * MAX_ALIENS__IN_A_ROW};
+    short int maxAlienBullets;
+    std::vector<AlienBullet> alienBullets;
+};
+
+
 #endif //INVADER_V_01_ALIENS_H
