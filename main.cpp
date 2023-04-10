@@ -6,6 +6,10 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+#include "shields.h"
+
+#include "aliendefender.h"
+
 #define MAX_SCREEN_X_DISTANCE 1600
 #define MAX_SCREEN_Y_DISTANCE 900
 #define BORDER_HEIGHT_BOTTOM 10
@@ -49,16 +53,7 @@
 #define DEFENDER_BULLET_SPED 20
 #define BULLET__TOP___BORDER 12
 
-#define MAX_SHIELD__GRAPHICS 16
-#define NUMBER___OF__SHIELDS 4
-#define SHIELD_SPRITE_XCOUNT 2
-#define SHIELD_SPRITE_YCOUNT 2
-#define SHIELD_SPRITE__WIDTH 64
-#define SHIELD_SPRITE_HEIGHT 32
-#define SHIELD_BASE_FILE_NAM "./assets/shield/shield-"
-#define SHIELD_X_SCREEN_DIST (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHIELDS)
-#define SHIELD_OFSET_X_VALUE (MAX_SCREEN_X_DISTANCE / NUMBER___OF__SHIELDS / 2) - ((SHIELD_SPRITE_XCOUNT * SHIELD_SPRITE__WIDTH) /2)
-#define SHIELD_HEIGHT_YCOORD DEFENDER__Y_POSITION - (SHIELD_SPRITE_HEIGHT * SHIELD_SPRITE_YCOUNT) - 100
+
 
 #define ALIEN_____PATH "./assets/aliens/"
 #define DEFENDER__PATH "./assets/defender/"
@@ -527,6 +522,8 @@ private:
  * ===============================================================================================================
  */
 int main() {
+    thisIsImportant tt = thisIsImportant();
+    //tt.display();
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
     window.setKeyRepeatEnabled(true);
     AlienFleet fleet = AlienFleet(3);
