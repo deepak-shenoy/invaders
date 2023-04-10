@@ -8,12 +8,9 @@
 
 #include "shields.h"
 
-#include "aliendefender.h"
-
-#define MAX_SCREEN_X_DISTANCE 1600
-#define MAX_SCREEN_Y_DISTANCE 900
-#define BORDER_HEIGHT_BOTTOM 10
-#define BORDER_HEIGHT____TOP 80
+#include "settings.h"
+#include "shields.h"
+#include "defender.h"
 
 #define MAX_ALIENS__IN_A_ROW 10
 #define MAX_NO_OF_ALIEN_ROWS 2
@@ -38,151 +35,9 @@
 #define ALIEN_BULLET_SPEED01 10
 #define ALIEN_BULLET_SPEED02 15
 
-#define DEFENDER______HEIGHT 72
-#define DEFENDER_______WIDTH 72
-#define DEFENDER_FROM_BORDER 5
-#define DEFENDER___FROM_WALL 10
-#define DEFENDER_MOVE___DIST 15
-#define DEFENDER_MV_FAST_DIS 30
-#define DEFENDER__Y_POSITION MAX_SCREEN_Y_DISTANCE - DEFENDER______HEIGHT- DEFENDER_FROM_BORDER - BORDER_HEIGHT_BOTTOM
-#define DEFENDER_LEFT_BORDER DEFENDER_FROM_BORDER
-#define DEFENDER_RIGHT_BORDR MAX_SCREEN_X_DISTANCE - DEFENDER_______WIDTH - DEFENDER_FROM_BORDER
-
-#define DEFENDER_BULLET_HGHT 11
-#define DEFENDER_BULLET_WIDT 7
-#define DEFENDER_BULLET_SPED 20
-#define BULLET__TOP___BORDER 12
-
-
-
 #define ALIEN_____PATH "./assets/aliens/"
-#define DEFENDER__PATH "./assets/defender/"
 
-enum AlienType {defender, striker};
-enum BulletType {defenderBullet, alienBullet};
 
-/*
- * ===============================================================================================================
- * Shield
- * ===============================================================================================================
- */
-class ShieldUnit {
-public:
-    ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t yComponent) {
-        x = xCoord;
-        y = yCoord;
-        std::stringstream tmpXNumberConverter, tmpYNumberConverter, tmpShieldStateCode;
-        tmpXNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(xComponent);
-        unitHeightCode = tmpXNumberConverter.str();
-
-        tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(yComponent);
-        unitWidthCode = tmpYNumberConverter.str();
-
-        shieldState = 0;
-
-        tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
-        shieldStateCode = tmpShieldStateCode.str();
-
-        unitWidth = xComponent;
-        unitHeight = yComponent;
-
-    }
-    void drawUnit(sf::RenderWindow& renderWindowRef) {
-        // Only draw the shield if any part of it exists
-        if(up) {
-            std::stringstream tmpXNumberConverter, tmpYNumberConverter, tmpShieldStateCode;
-            tmpXNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(unitWidth);
-            unitHeightCode = tmpXNumberConverter.str();
-
-            tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(unitHeight);
-            unitWidthCode = tmpYNumberConverter.str();
-
-            tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
-            shieldStateCode = tmpShieldStateCode.str();
-
-            shieldTexture.loadFromFile(
-                    SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-" + shieldStateCode + ".png");
-//            std::cout<<SHIELD_BASE_FILE_NAM + unitWidthCode + "-" + unitHeightCode + "-" + shieldStateCode + ".png"<<std::endl;
-            shieldSprite.setTexture(shieldTexture);
-            shieldSprite.setPosition(x, y);
-            renderWindowRef.draw(shieldSprite);
-        }
-    }
-    float getX() {
-        return x;
-    }
-    float getY() {
-        return y;
-    }
-    bool componentIsUp() {
-        return up;
-    }
-    void decreaseShieldState(BulletType bulletType) {
-        if (up && ++shieldState<MAX_SHIELD__GRAPHICS) {
-            std::cout<<"Shot "<<shieldState<<std::endl;
-        } else up = false;
-    }
-private:
-    float x;
-    float y;
-    std::string unitHeightCode;
-    unsigned short int unitHeight;
-    std::string unitWidthCode;
-    unsigned short int unitWidth;
-    std::string baseFileName;
-    bool up{true};
-    sf::Texture shieldTexture;
-    sf::Sprite shieldSprite;
-    unsigned short int shieldState{0};
-    std::string shieldStateCode;
-};
-
-class Shields {
-public:
-    Shields() {
-        // Constructor
-        for (int si = 0; si < NUMBER___OF__SHIELDS; si++) {
-            for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++) {
-                for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
-                    float xCoord = si * SHIELD_X_SCREEN_DIST + SHIELD_OFSET_X_VALUE + (sx * SHIELD_SPRITE__WIDTH);
-                    float yCoord = sy * SHIELD_SPRITE_HEIGHT + SHIELD_HEIGHT_YCOORD;
-                    shieldUnits[si][sx][sy] = new ShieldUnit(xCoord, yCoord, sx, sy);
-                }
-            }
-        }
-    }
-    ~Shields() {
-        // Destructor
-    }
-    void drawShields(sf::RenderWindow& renderWindowRef) {
-        for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
-            for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
-                for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
-                    shieldUnits[si][sx][sy]->drawUnit(renderWindowRef);
-                }
-            }
-        }
-    }
-    bool shieldAreaImpacted(float x, float y, BulletType bulletType) {
-        for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
-            for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
-                for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
-                    if(shieldUnits[si][sx][sy]->componentIsUp()) {
-                        float shieldX{shieldUnits[si][sx][sy]->getX()};
-                        float shieldY{shieldUnits[si][sx][sy]->getY()};
-                        if(x>=shieldX && x<=(shieldX + SHIELD_SPRITE__WIDTH) && y>=shieldY && y<=(shieldY + SHIELD_SPRITE_HEIGHT)) {
-                            shieldUnits[si][sx][sy]->decreaseShieldState(bulletType);
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-private:
-    ShieldUnit* shieldUnits [NUMBER___OF__SHIELDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
-};
 /*
  * ===============================================================================================================
  * Single Alien Definition
@@ -522,7 +377,6 @@ private:
  * ===============================================================================================================
  */
 int main() {
-    thisIsImportant tt = thisIsImportant();
     //tt.display();
     sf::RenderWindow window(sf::VideoMode(MAX_SCREEN_X_DISTANCE,MAX_SCREEN_Y_DISTANCE), "Alien Invaders");
     window.setKeyRepeatEnabled(true);
