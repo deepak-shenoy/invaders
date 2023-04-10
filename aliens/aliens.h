@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "settings.h"
+#include "shields.h"
 
 #ifndef INVADER_V_01_ALIENS_H
 #define INVADER_V_01_ALIENS_H
@@ -59,6 +60,21 @@ private:
     float XLocation; //{0.0f};
     float YLocation; //{0.0f};
     AlienType alienType;
+    sf::Texture m_texture;
+    sf::Sprite m_sprite;
+};
+
+class AlienBullet {
+public:
+    AlienBullet();
+    ~AlienBullet();
+    void start(float xStartCord, float yStartCord, bool variableBulletSpeed);
+    void move(sf::RenderWindow& renderWindowsReference, Shields& shields);
+    bool isActive();
+private:
+    float xCord, yCord;
+    bool activeBullet{false};
+    float bulletSpeed{ALIEN_BULLET_SPEED00};
     sf::Texture m_texture;
     sf::Sprite m_sprite;
 };
