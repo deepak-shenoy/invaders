@@ -4,6 +4,10 @@
 
 #ifndef INVADER_V_01_DEFENDER_H
 #define INVADER_V_01_DEFENDER_H
+
+#include <SFML/Graphics.hpp>
+#include "aliens.h"
+
 #define DEFENDER______HEIGHT 72
 #define DEFENDER_______WIDTH 72
 #define DEFENDER_FROM_BORDER 5
@@ -19,4 +23,28 @@
 #define DEFENDER_BULLET_SPED 20
 #define BULLET__TOP___BORDER 12
 #define DEFENDER__PATH "./assets/defender/"
+
+class Defender {
+public:
+    Defender();
+    ~Defender();
+    void draw(sf::RenderWindow& renderWindowsReference);
+    void moveLeft(bool moveFast);
+    void moveRight(bool moveFast);
+    void fireShot();
+    void moveBullet(sf::RenderWindow& renderWindowsReference, AlienFleet& alienFleet, Shields& shields);
+    bool firedShot();
+private:
+    std::string defenderImage{DEFENDER__PATH};
+    bool shotFired{false};
+    sf::Texture defender_m_texture;
+    sf::Sprite defender_m_sprite;
+    float XPos{MAX_SCREEN_X_DISTANCE/2};
+    float bulletXPos{0};
+    float bulletYPos{0};
+    std::string bulletImage{DEFENDER__PATH};
+    sf::Texture bullet_m_texture;
+    sf::Sprite bullet_m_sprite;
+};
+
 #endif //INVADER_V_01_DEFENDER_H
