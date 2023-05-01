@@ -30,7 +30,7 @@ void Shields::drawShields(sf::RenderWindow& renderWindowRef) {
         }
     }
 }
-bool Shields::shieldAreaImpacted(float x, float y, BulletType bulletType) {
+bool Shields::shieldAreaFromTopImpacted(float x, float y, BulletType bulletType) {
     for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
         for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
             for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
@@ -39,6 +39,24 @@ bool Shields::shieldAreaImpacted(float x, float y, BulletType bulletType) {
                     float shieldY{shieldUnits[si][sx][sy]->getY()};
                     if(x>=shieldX && x<=(shieldX + SHIELD_SPRITE__WIDTH) && y>=shieldY && y<=(shieldY + SHIELD_SPRITE_HEIGHT)) {
                         shieldUnits[si][sx][sy]->decreaseTopShieldState(bulletType);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Shields::shieldAreaFromBottomImpacted(float x, float y, BulletType bulletType) {
+    for (int si = 0; si < NUMBER___OF__SHIELDS; si ++) {
+        for (int sx = 0; sx < SHIELD_SPRITE_XCOUNT; sx++ ) {
+            for (int sy = 0; sy < SHIELD_SPRITE_YCOUNT; sy++) {
+                if(shieldUnits[si][sx][sy]->componentIsUp()) {
+                    float shieldX{shieldUnits[si][sx][sy]->getX()};
+                    float shieldY{shieldUnits[si][sx][sy]->getY()};
+                    if(x>=shieldX && x<=(shieldX + SHIELD_SPRITE__WIDTH) && y>=shieldY && y<=(shieldY + SHIELD_SPRITE_HEIGHT)) {
+                        shieldUnits[si][sx][sy]->decreaseBottomShieldState(bulletType);
                         return true;
                     }
                 }

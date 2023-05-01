@@ -35,7 +35,7 @@ void AlienBullet::move(sf::RenderWindow& renderWindowsReference, Shields& shield
     if(activeBullet) {
         std::string alientBulletImage{ALIEN_____PATH};
         m_texture.loadFromFile(alientBulletImage.append("bullet-00.png"));
-        if(shields.shieldAreaImpacted(xCord, yCord,alienBullet)) {
+        if(shields.shieldAreaFromTopImpacted(xCord, yCord, alienBullet)) {
             activeBullet=false;
             return;
         }

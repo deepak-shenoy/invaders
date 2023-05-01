@@ -46,11 +46,18 @@ private:
     std::string baseFileName;
     bool up{true};
 
+    sf::Texture shieldBaseTexture;
     sf::Texture shieldTopTexture;
     sf::Texture shieldBottomTexture;
 
+    sf::Sprite shieldBaseSprite;
     sf::Sprite shieldTopSprite;
     sf::Sprite shieldBottomSprite;
+
+    sf::Image shieldTopImage;
+    sf::Image shieldBottomImage;
+
+    sf::RenderTexture combinedShield;
 
     unsigned short int shieldTopState{0};
     unsigned short int shieldBottomState{0};
@@ -64,7 +71,8 @@ public:
     Shields();
     ~Shields();
     void drawShields(sf::RenderWindow& renderWindowRef);
-    bool shieldAreaImpacted(float x, float y, BulletType bulletType);
+    bool shieldAreaFromTopImpacted(float x, float y, BulletType bulletType);
+    bool shieldAreaFromBottomImpacted(float x, float y, BulletType bulletType);
 private:
     ShieldUnit* shieldUnits [NUMBER___OF__SHIELDS][SHIELD_SPRITE_XCOUNT][SHIELD_SPRITE_YCOUNT];
 };
