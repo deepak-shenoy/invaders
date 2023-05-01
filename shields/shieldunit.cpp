@@ -87,12 +87,14 @@ bool ShieldUnit::componentIsUp() {
     return up;
 }
 void ShieldUnit::decreaseTopShieldState(BulletType bulletType) {
-    if (up && ++shieldTopState<MAX_SHIELD__GRAPHICS) {
-        std::cout<<"Shot "<<shieldTopState<<std::endl;
+    shieldTopState++;
+    if (up && (shieldBottomState + shieldTopState)<MAX_SHIELD__GRAPHICS) {
+        std::cout<<"Shield top "<<shieldTopState<<" Shield bottom "<<shieldBottomState<<std::endl;
     } else up = false;
 }
 void ShieldUnit::decreaseBottomShieldState(BulletType bulletType) {
-    if (up && ++shieldBottomState<MAX_SHIELD__GRAPHICS) {
-        std::cout<<"Shot "<<shieldBottomState<<std::endl;
+    shieldBottomState++;
+    if (up && (shieldBottomState + shieldTopState)<MAX_SHIELD__GRAPHICS) {
+        std::cout<<"Shield top "<<shieldTopState<<" Shield bottom "<<shieldBottomState<<std::endl;
     } else up = false;
 }
