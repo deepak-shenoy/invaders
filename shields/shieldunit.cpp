@@ -60,6 +60,12 @@ void ShieldUnit::drawUnit(sf::RenderWindow& renderWindowRef) {
         shieldBottomTexture.loadFromFile(
                 SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-" + shieldBottomStateCode + ".png");
 
+        shieldTopImage = shieldTopTexture.copyToImage();
+        shieldBottomImage = shieldBottomTexture.copyToImage();
+
+        shieldTopImage.createMaskFromColor(sf::Color::White);
+        shieldBottomImage.createMaskFromColor(sf::Color::White);
+
         shieldTopSprite.setTexture(shieldTopTexture);
         renderWindowRef.draw(shieldTopSprite);
     }
