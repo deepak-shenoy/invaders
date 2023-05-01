@@ -49,7 +49,7 @@ Defender::~Defender() {
             }
             renderWindowsReference.draw(bullet_m_sprite);
             if(alienFleet.alienAreaImpacted(bulletXPos, bulletYPos)) shotFired = false;
-            if(shields.shieldAreaFromTopImpacted(bulletXPos, bulletYPos, defenderBullet)) shotFired = false;
+            if(shields.shieldAreaFromBottomImpacted(bulletXPos, bulletYPos, defenderBullet)) shotFired = false;
         }
     }
     bool Defender::firedShot() {
