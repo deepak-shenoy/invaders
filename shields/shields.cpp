@@ -38,7 +38,7 @@ bool Shields::shieldAreaImpacted(float x, float y, BulletType bulletType) {
                     float shieldX{shieldUnits[si][sx][sy]->getX()};
                     float shieldY{shieldUnits[si][sx][sy]->getY()};
                     if(x>=shieldX && x<=(shieldX + SHIELD_SPRITE__WIDTH) && y>=shieldY && y<=(shieldY + SHIELD_SPRITE_HEIGHT)) {
-                        shieldUnits[si][sx][sy]->decreaseShieldState(bulletType);
+                        shieldUnits[si][sx][sy]->decreaseTopShieldState(bulletType);
                         return true;
                     }
                 }

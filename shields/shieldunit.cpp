@@ -14,10 +14,11 @@ ShieldUnit::ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t y
     tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(yComponent);
     unitWidthCode = tmpYNumberConverter.str();
 
-    shieldState = 0;
+    shieldTopState = 0;
+    shieldBottomState = 0;
 
-    tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
-    shieldStateCode = tmpShieldStateCode.str();
+    tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldTopState);
+    shieldTopStateCode = tmpShieldStateCode.str();
 
     unitWidth = xComponent;
     unitHeight = yComponent;
@@ -33,15 +34,15 @@ void ShieldUnit::drawUnit(sf::RenderWindow& renderWindowRef) {
         tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(unitHeight);
         unitWidthCode = tmpYNumberConverter.str();
 
-        tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldState);
-        shieldStateCode = tmpShieldStateCode.str();
+        tmpShieldStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldTopState);
+        shieldTopStateCode = tmpShieldStateCode.str();
 
-        shieldTexture.loadFromFile(
-                SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-" + shieldStateCode + ".png");
+        shieldTopTexture.loadFromFile(
+                SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-" + shieldTopStateCode + ".png");
 //            std::cout<<SHIELD_BASE_FILE_NAM + unitWidthCode + "-" + unitHeightCode + "-" + shieldStateCode + ".png"<<std::endl;
-        shieldSprite.setTexture(shieldTexture);
-        shieldSprite.setPosition(x, y);
-        renderWindowRef.draw(shieldSprite);
+        shieldTopSprite.setTexture(shieldTopTexture);
+        shieldTopSprite.setPosition(x, y);
+        renderWindowRef.draw(shieldTopSprite);
     }
 }
 float ShieldUnit::getX() {
@@ -53,8 +54,13 @@ float ShieldUnit::getY() {
 bool ShieldUnit::componentIsUp() {
     return up;
 }
-void ShieldUnit::decreaseShieldState(BulletType bulletType) {
-    if (up && ++shieldState<MAX_SHIELD__GRAPHICS) {
-        std::cout<<"Shot "<<shieldState<<std::endl;
+void ShieldUnit::decreaseTopShieldState(BulletType bulletType) {
+    if (up && ++shieldTopState<MAX_SHIELD__GRAPHICS) {
+        std::cout<<"Shot "<<shieldTopState<<std::endl;
+    } else up = false;
+}
+void ShieldUnit::decreaseBottomShieldState(BulletType bulletType) {
+    if (up && ++shieldBottomState<MAX_SHIELD__GRAPHICS) {
+        std::cout<<"Shot "<<shieldBottomState<<std::endl;
     } else up = false;
 }

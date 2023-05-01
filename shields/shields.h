@@ -34,7 +34,8 @@ public:
     float getX();
     float getY();
     bool componentIsUp();
-    void decreaseShieldState(BulletType bulletType);
+    void decreaseTopShieldState(BulletType bulletType);
+    void decreaseBottomShieldState(BulletType bulletType);
 private:
     float x;
     float y;
@@ -44,10 +45,18 @@ private:
     unsigned short int unitWidth;
     std::string baseFileName;
     bool up{true};
-    sf::Texture shieldTexture;
-    sf::Sprite shieldSprite;
-    unsigned short int shieldState{0};
-    std::string shieldStateCode;
+
+    sf::Texture shieldTopTexture;
+    sf::Texture shieldBottomTexture;
+
+    sf::Sprite shieldTopSprite;
+    sf::Sprite shieldBottomSprite;
+
+    unsigned short int shieldTopState{0};
+    unsigned short int shieldBottomState{0};
+
+    std::string shieldTopStateCode;
+    std::string shieldBottomStateCode;
 };
 
 class Shields {
