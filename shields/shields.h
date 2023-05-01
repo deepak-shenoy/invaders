@@ -46,6 +46,8 @@ private:
     std::string baseFileName;
     bool up{true};
 
+    sf::Image shieldBaseImage;
+
     sf::Texture shieldBaseTexture;
     sf::Texture shieldTopTexture;
     sf::Texture shieldBottomTexture;

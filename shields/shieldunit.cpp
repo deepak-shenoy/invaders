@@ -16,6 +16,10 @@ ShieldUnit::ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t y
 
     shieldBaseTexture.loadFromFile(
             SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-00" + ".png");
+
+    shieldBaseImage = shieldBaseTexture.copyToImage();
+    shieldBaseImage.createMaskFromColor(sf::Color::Black);
+    shieldBaseTexture.loadFromImage(shieldBaseImage);
     shieldBaseSprite.setTexture(shieldBaseTexture);
     shieldBaseSprite.setPosition(x,y);
 
