@@ -23,6 +23,9 @@ ShieldUnit::ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t y
     shieldBaseSprite.setTexture(shieldBaseTexture);
     shieldBaseSprite.setPosition(x,y);
 
+    shieldTopSprite.setPosition(x, y);
+    shieldBottomSprite.setPosition(x, y);
+
     shieldTopState = 0;
     shieldBottomState = 0;
 
@@ -58,7 +61,6 @@ void ShieldUnit::drawUnit(sf::RenderWindow& renderWindowRef) {
                 SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-" + shieldBottomStateCode + ".png");
 
         shieldTopSprite.setTexture(shieldTopTexture);
-        shieldTopSprite.setPosition(x, y);
         renderWindowRef.draw(shieldTopSprite);
     }
 }

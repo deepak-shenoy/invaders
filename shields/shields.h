@@ -47,6 +47,8 @@ private:
     bool up{true};
 
     sf::Image shieldBaseImage;
+    sf::Image shieldTopImage;
+    sf::Image shieldBottomImage;
 
     sf::Texture shieldBaseTexture;
     sf::Texture shieldTopTexture;
@@ -55,9 +57,6 @@ private:
     sf::Sprite shieldBaseSprite;
     sf::Sprite shieldTopSprite;
     sf::Sprite shieldBottomSprite;
-
-    sf::Image shieldTopImage;
-    sf::Image shieldBottomImage;
 
     sf::RenderTexture combinedShield;
 
