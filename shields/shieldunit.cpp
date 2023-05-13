@@ -55,10 +55,10 @@ void ShieldUnit::drawUnit(sf::RenderWindow& renderWindowRef) {
         shieldBottomStateCode = tmpShieldBottomStateCode.str();
 
         shieldTopTexture.loadFromFile(
-                SHIELD_BASE_BRAK_NAM + shieldTopStateCode + ".png");
+                SHIELD_BASE_TBRK_NAM + shieldTopStateCode + ".png");
 
         shieldBottomTexture.loadFromFile(
-                SHIELD_BASE_FILE_NAM + unitWidthCode  + "-" + unitHeightCode + "-" + shieldBottomStateCode + ".png");
+                SHIELD_BASE_BBRK_NAM + shieldBottomStateCode + ".png");
 
         shieldTopImage = shieldTopTexture.copyToImage();
         shieldBottomImage = shieldBottomTexture.copyToImage();
