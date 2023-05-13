@@ -9,13 +9,13 @@ ShieldUnit::ShieldUnit(float xCoord, float yCoord, uint8_t xComponent, uint8_t y
     y = yCoord;
     std::stringstream tmpXNumberConverter, tmpYNumberConverter, tmpShieldStateCode;
     tmpXNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(xComponent);
-    unitHeightCode = tmpXNumberConverter.str();
+    unitWidthCode = tmpXNumberConverter.str();
 
     tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(yComponent);
-    unitWidthCode = tmpYNumberConverter.str();
+    unitHeightCode = tmpYNumberConverter.str();
 
     shieldBaseTexture.loadFromFile(
-            SHIELD_BASE_FILE_NAM + unitHeightCode + "-" + unitWidthCode + "-00" + ".png");
+            SHIELD_BASE_FILE_NAM + unitWidthCode + "-" + unitHeightCode + "-00" + ".png");
 
     shieldBaseImage = shieldBaseTexture.copyToImage();
     shieldBaseImage.createMaskFromColor(sf::Color::Black);
@@ -43,10 +43,10 @@ void ShieldUnit::drawUnit(sf::RenderWindow& renderWindowRef) {
     if(up) {
         std::stringstream tmpXNumberConverter, tmpYNumberConverter, tmpShieldTopStateCode, tmpShieldBottomStateCode;
         tmpXNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(unitWidth);
-        unitHeightCode = tmpXNumberConverter.str();
+        unitWidthCode = tmpXNumberConverter.str();
 
         tmpYNumberConverter << std::setfill('0') << std::setw(2) << std::to_string(unitHeight);
-        unitWidthCode = tmpYNumberConverter.str();
+        unitHeightCode = tmpYNumberConverter.str();
 
         tmpShieldTopStateCode << std::setfill('0') << std::setw(2) << std::to_string(shieldTopState);
         shieldTopStateCode = tmpShieldTopStateCode.str();
@@ -55,10 +55,10 @@ void ShieldUnit::drawUnit(sf::RenderWindow& renderWindowRef) {
         shieldBottomStateCode = tmpShieldBottomStateCode.str();
 
         shieldTopTexture.loadFromFile(
-                SHIELD_BASE_FILE_NAM + unitHeightCode + "-00-" + shieldTopStateCode + ".png");
+                SHIELD_BASE_FILE_NAM + unitWidthCode  + "-" + unitHeightCode + "-" + shieldTopStateCode + ".png");
 
         shieldBottomTexture.loadFromFile(
-                SHIELD_BASE_FILE_NAM + unitHeightCode + "-01-" + shieldBottomStateCode + ".png");
+                SHIELD_BASE_FILE_NAM + unitWidthCode  + "-" + unitHeightCode + "-" + shieldBottomStateCode + ".png");
 
         shieldTopImage = shieldTopTexture.copyToImage();
         shieldBottomImage = shieldBottomTexture.copyToImage();
@@ -73,8 +73,8 @@ void ShieldUnit::drawUnit(sf::RenderWindow& renderWindowRef) {
         shieldBottomSprite.setTexture(shieldBottomTexture);
 
         renderWindowRef.draw(shieldBaseSprite);
-        renderWindowRef.draw(shieldTopSprite);
-        renderWindowRef.draw(shieldBottomSprite);
+        if(shieldTopState!=0) renderWindowRef.draw(shieldTopSprite);
+        if(shieldBottomState!=0) renderWindowRef.draw(shieldBottomSprite);
     }
 }
 float ShieldUnit::getX() {
